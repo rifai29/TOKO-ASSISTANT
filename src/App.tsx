@@ -9,8 +9,8 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 const INITIAL_SETTINGS: GondolaSettings = {
-  name: "Gondola A – Beverages",
-  store: "Main Street Market",
+  name: "PLANOGRAM AA4",
+  store: "RIFAKHI RINDHOI SETIAWAN",
   date: new Date().toISOString().split('T')[0],
   category: "Beverages",
   notes: "",
@@ -22,6 +22,15 @@ const INITIAL_SETTINGS: GondolaSettings = {
 };
 
 const INITIAL_PRODUCTS: Product[] = [
+  { 
+    id: 'extra-joss', 
+    name: 'Extra Joss Ultimate Minuman Energi Kaleng 250ml', 
+    sku: '89930580970', 
+    plu: '466032', 
+    color: '#FCD12A', 
+    facing: 1, 
+    rh: 0 
+  },
   { id: '1', name: 'Aqua 600ml', sku: 'AQU001', plu: 'Aqua', color: '#378ADD', facing: 2, rh: 30 },
   { id: '2', name: 'Teh Botol Sosro', sku: 'TBS002', plu: 'Sosro', color: '#D85A30', facing: 2, rh: 30 },
   { id: '3', name: 'Pocari Sweat', sku: 'POC003', plu: 'Otsuka', color: '#4d9de0', facing: 1, rh: 30 },
@@ -41,7 +50,12 @@ export default function App() {
     }
     return {
       products: INITIAL_PRODUCTS,
-      shelves: Array.from({ length: 4 }, () => []),
+      shelves: [
+        [INITIAL_PRODUCTS[0]],
+        [],
+        [],
+        []
+      ],
       settings: INITIAL_SETTINGS
     };
   });
