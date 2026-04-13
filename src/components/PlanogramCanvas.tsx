@@ -57,18 +57,8 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
 
         <div 
           ref={canvasRef}
-          className="bg-white/70 backdrop-blur-sm rounded-[1.2rem] md:rounded-[2.5rem] ios-shadow p-3 md:p-10 relative overflow-hidden border border-white print:shadow-none print:border-none print:bg-white"
+          className="bg-white/70 backdrop-blur-sm rounded-[1.2rem] md:rounded-[2.5rem] ios-shadow p-3 md:p-8 relative overflow-hidden border border-white print:shadow-none print:border-none print:bg-white"
         >
-          <div className="flex items-center justify-between mb-4 md:mb-12">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-1 h-5 md:w-1.5 md:h-8 bg-primary rounded-full" />
-              <div>
-                <h3 className="font-bold text-base md:text-xl tracking-tight">Gondola Layout</h3>
-                <p className="text-[9px] md:text-xs text-gray-400 font-medium tracking-wide">Interactive Schematic</p>
-              </div>
-            </div>
-          </div>
-
           <div className="space-y-6 md:space-y-8">
             {Array.from({ length: settings.shelfCount }).map((_, si) => {
               const shelf = shelves[si] || [];
@@ -83,7 +73,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                   </div>
                   
                   <div className="w-full relative overflow-x-auto pb-4 custom-scrollbar">
-                    <div className="flex items-end gap-2 md:gap-3 min-h-[120px] md:min-h-[140px] px-2 md:px-6 w-max">
+                    <div className="flex items-end gap-2 md:gap-3 min-h-[180px] md:min-h-[220px] px-2 md:px-6 pt-4 w-max">
                       <AnimatePresence mode="popLayout">
                         {shelf.map((p, pi) => (
                           <motion.div
@@ -101,12 +91,12 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 !p.image && "bg-primary/20"
                               )}
                               style={{ 
-                                height: `${window.innerWidth < 768 ? 80 + (settings.shelfCount - si) * 5 : 100 + (settings.shelfCount - si) * 8}px`,
+                                height: `${window.innerWidth < 768 ? 140 + (settings.shelfCount - si) * 5 : 180 + (settings.shelfCount - si) * 8}px`,
                                 backgroundImage: p.image ? 'none' : 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, transparent 100%)'
                               }}
                             >
                               {p.image ? (
-                                <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-contain p-1" referrerPolicy="no-referrer" />
                               ) : (
                                 <span className="text-[10px] font-bold text-primary leading-tight drop-shadow-sm relative z-10">
                                   {p.name}
@@ -124,14 +114,10 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
 
                             <button 
                               onClick={(e) => { e.stopPropagation(); onRemoveFromShelf(si, pi); }}
-                              className="absolute -top-1.5 -right-1.5 w-6 h-6 md:w-7 md:h-7 bg-white text-red-500 rounded-full flex items-center justify-center opacity-100 md:opacity-0 group-hover/product:opacity-100 transition-all ios-shadow border border-gray-100 scale-90 md:scale-75 group-hover/product:scale-100 z-30 hover:bg-red-50"
+                              className="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center opacity-100 md:opacity-0 group-hover/product:opacity-100 transition-all ios-shadow border border-gray-100 z-30 hover:bg-red-50"
                             >
-                              <Trash2 size={12} className="md:w-[14px] md:h-[14px]" />
+                              <Trash2 size={14} />
                             </button>
-
-                            <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 whitespace-nowrap">
-                              F:{p.facing}
-                            </div>
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -141,7 +127,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                         whileTap={{ scale: 0.95 }}
                         onClick={() => onPlaceProduct(si)}
                         className={cn(
-                          "w-14 md:w-16 h-20 md:h-24 border-2 border-dashed rounded-xl flex items-center justify-center transition-all shrink-0",
+                          "w-14 md:w-16 h-24 md:h-32 border-2 border-dashed rounded-xl flex items-center justify-center transition-all shrink-0",
                           selectedProductId 
                             ? "border-primary/40 bg-primary/5 text-primary animate-pulse" 
                             : "border-gray-200 text-gray-300 hover:border-gray-300 hover:text-gray-400"
