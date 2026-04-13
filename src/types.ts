@@ -3,10 +3,12 @@ export interface Product {
   name: string;
   sku: string;
   plu: string;
-  color: string;
   facing: number;
   rh: number;
   image?: string;
+  shelf?: number;
+  slot?: number;
+  gondolaId?: string; // Added to track which gondola it belongs to
 }
 
 export interface GondolaSettings {
@@ -22,26 +24,17 @@ export interface GondolaSettings {
   supplier: string;
 }
 
-export interface PlanogramState {
-  products: Product[];
-  shelves: Product[][];
+export interface Gondola {
+  id: string;
   settings: GondolaSettings;
+  shelves: Product[][];
 }
 
-export const DEFAULT_PALETTE = [
-  "#378ADD",
-  "#D85A30",
-  "#1D9E75",
-  "#D4537E",
-  "#639922",
-  "#BA7517",
-  "#534AB7",
-  "#5F5E5A",
-  "#E24B4A",
-  "#0F6E56",
-  "#3C3489",
-  "#3B6D11",
-];
+export interface PlanogramState {
+  products: Product[];
+  gondolas: Gondola[];
+  activeGondolaId: string;
+}
 
 export const SHELF_LEVELS = [
   "Selving 1",

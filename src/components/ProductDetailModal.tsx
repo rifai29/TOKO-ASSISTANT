@@ -73,9 +73,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   </div>
                 </>
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-2" style={{ backgroundColor: product.color }}>
-                  <Package size={40} className="text-white/40" />
-                  <span className="text-4xl font-bold text-white drop-shadow-md">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-primary/10">
+                  <Package size={40} className="text-primary/40" />
+                  <span className="text-4xl font-bold text-primary drop-shadow-sm">
                     {product.name.substring(0, 1)}
                   </span>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex flex-col items-center justify-center gap-2 text-white opacity-0 group-hover:opacity-100">
@@ -113,21 +113,29 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex flex-col items-center justify-center bg-white p-4 rounded-[1rem] ios-shadow border border-white space-y-2">
+              <div className="flex flex-col items-center justify-center bg-white p-4 rounded-[1rem] ios-shadow border border-white space-y-2 overflow-hidden">
                 <div className="text-center">
                   <p className="text-[7px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-0.5">Estimasi Batas Retur</p>
                   <p className="text-[10px] font-bold text-gray-900">
                     {new Date(Date.now() + (product.rh || 0) * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
-                <Barcode 
-                  value={product.sku || '000000'} 
-                  width={1.2} 
-                  height={40} 
-                  fontSize={10}
-                  background="transparent"
-                  margin={0}
-                />
+                <div className="bg-white p-2 rounded-lg">
+                  <Barcode 
+                    value={product.sku || '0000000000000'} 
+                    width={1.8} 
+                    height={70} 
+                    fontSize={14}
+                    background="#ffffff"
+                    lineColor="#000000"
+                    margin={0}
+                    format={product.sku?.length === 13 ? "EAN13" : product.sku?.length === 8 ? "EAN8" : "CODE128"}
+                    displayValue={true}
+                    fontOptions="bold"
+                    textMargin={4}
+                  />
+                </div>
+                <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest">Retail Standard Barcode</p>
               </div>
             </div>
 

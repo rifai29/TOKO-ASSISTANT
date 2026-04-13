@@ -92,43 +92,14 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Custom Scrollbar - Simplified for performance */
+/* Custom Scrollbar - Hidden by default for cleaner UI */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  display: none;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  height: 4px;
-  display: block;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 10px;
-  margin: 0 24px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* iOS Transition */

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Product, GondolaSettings, SHELF_LEVELS } from '../types';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Maximize2, Download, Printer } from 'lucide-react';
+import { Plus, Trash2, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProductDetailModal } from './ProductDetailModal';
 import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
+import Barcode from 'react-barcode';
 
 interface CanvasProps {
   shelves: Product[][];
@@ -28,41 +29,8 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
   onUpdateProduct
 }) => {
   const [detailInfo, setDetailInfo] = React.useState<{ product: Product, si: number, pi: number } | null>(null);
-  const [isExporting, setIsExporting] = React.useState(false);
   const canvasRef = React.useRef<HTMLDivElement>(null);
   const totalFacing = shelves.flat().reduce((acc, p) => acc + p.facing, 0);
-
-  const handleExport = async () => {
-    if (!canvasRef.current) return;
-    
-    setIsExporting(true);
-    const toastId = toast.loading('Generating image...');
-    
-    try {
-      const canvas = await html2canvas(canvasRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#f9fafb',
-        logging: false,
-      });
-      
-      const link = document.createElement('a');
-      link.download = `Planogram-${settings.name || 'Layout'}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      
-      toast.success('Planogram exported successfully!', { id: toastId });
-    } catch (error) {
-      console.error('Export failed:', error);
-      toast.error('Failed to export planogram', { id: toastId });
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   return (
     <div className="flex-1 h-full p-3 md:p-8 overflow-auto relative custom-scrollbar">
@@ -77,25 +45,6 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
             </div>
           </div>
           <div className="flex items-center justify-between w-full md:w-auto gap-2 mt-1 md:mt-0">
-            <div className="flex items-center gap-1.5">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handlePrint}
-                className="h-8 md:h-9 px-2 md:px-4 rounded-xl ios-shadow border-none bg-white font-bold text-[9px] md:text-[11px] uppercase tracking-wider"
-              >
-                <Printer size={13} className="md:mr-2" /> <span className="hidden md:inline">Print</span>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleExport}
-                disabled={isExporting}
-                className="h-8 md:h-9 px-2 md:px-4 rounded-xl ios-shadow border-none bg-white font-bold text-[9px] md:text-[11px] uppercase tracking-wider"
-              >
-                <Download size={13} className="md:mr-2" /> <span className="hidden md:inline">{isExporting ? '...' : 'Export'}</span>
-              </Button>
-            </div>
             <div className="flex items-center gap-2">
               <div className="hidden md:block w-px h-8 bg-gray-200 mx-1 md:mx-2" />
               <div className="text-right shrink-0">
@@ -148,10 +97,10 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                               onClick={() => setDetailInfo({ product: p, si, pi })}
                               className={cn(
                                 "rounded-xl shadow-lg flex flex-col items-center justify-center p-2 md:p-3 text-center transition-all border border-white/20 overflow-hidden relative",
-                                p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16"
+                                p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16",
+                                !p.image && "bg-primary/20"
                               )}
                               style={{ 
-                                backgroundColor: p.color,
                                 height: `${window.innerWidth < 768 ? 80 + (settings.shelfCount - si) * 5 : 100 + (settings.shelfCount - si) * 8}px`,
                                 backgroundImage: p.image ? 'none' : 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, transparent 100%)'
                               }}
@@ -159,7 +108,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                               {p.image ? (
                                 <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-cover" referrerPolicy="no-referrer" />
                               ) : (
-                                <span className="text-[10px] font-bold text-white leading-tight drop-shadow-sm relative z-10">
+                                <span className="text-[10px] font-bold text-primary leading-tight drop-shadow-sm relative z-10">
                                   {p.name}
                                 </span>
                               )}
