@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Trash2, Check, Package, Settings2, Camera, Upload, X, Pencil, FileSpreadsheet, Layers } from 'lucide-react';
+import { Plus, Trash2, Check, Package, Camera, Upload, X, Pencil, FileSpreadsheet, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import Barcode from 'react-barcode';
@@ -156,26 +156,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="w-full md:w-80 bg-white/95 backdrop-blur-md rounded-[2rem] flex flex-col h-full overflow-hidden ios-shadow border md:border border-white/40 z-20">
+    <aside className="w-full md:w-80 bg-white/95 backdrop-blur-md rounded-[2rem] flex flex-col h-full overflow-hidden z-20">
       {/* Mobile Header */}
-      <div className="flex items-center justify-between px-6 pt-10 pb-2 md:hidden">
-        <h2 className="text-lg font-black text-primary tracking-tight">MENU</h2>
+      <div className="flex items-center justify-end px-4 pt-2 pb-1 md:hidden">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={onCloseMobile}
-          className="h-9 w-9 rounded-xl bg-gray-100 text-gray-500"
+          className="h-8 w-8 rounded-xl bg-gray-100 text-gray-500"
         >
-          <X size={18} />
+          <X size={16} />
         </Button>
       </div>
 
-      <div className="px-4 mt-2 md:mt-8 mb-4">
+      <div className="px-4 mt-0 md:mt-2 mb-2">
         <div className="bg-gray-100/80 p-1 rounded-2xl flex gap-1">
           {[
             { id: 'products', label: 'Catalog', icon: Package },
             { id: 'rak', label: 'Rak', icon: Layers },
-            { id: 'gondola', label: 'Config', icon: Settings2 }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -183,7 +181,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className={cn(
                 "flex-1 py-2 px-1 text-[10px] md:text-[11px] font-semibold flex items-center justify-center gap-1.5 md:gap-2 transition-all rounded-lg",
                 activeTab === tab.id 
-                  ? "bg-white text-primary shadow-sm" 
+                  ? "bg-white text-primary" 
                   : "text-gray-500 hover:text-gray-700"
               )}
             >
@@ -195,9 +193,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 scrollbar-hide">
-        <div className="space-y-6 pb-6">
+        <div className="space-y-4 pb-4">
           {activeTab === 'rak' && (
-            <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="space-y-4 animate-in fade-in duration-500">
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <Label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Daftar Rak</Label>
@@ -211,53 +209,76 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </Button>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {gondolas.map(g => (
-                    <Card 
+                    <div 
                       key={g.id}
                       onClick={() => onSelectGondola(g.id)}
                       className={cn(
-                        "p-3 cursor-pointer transition-all border-none rounded-2xl relative overflow-hidden group/rak",
+                        "p-4 cursor-pointer transition-all rounded-[1.5rem] relative overflow-hidden group/rak",
                         activeGondolaId === g.id 
-                          ? "bg-primary text-white ios-shadow" 
-                          : "bg-white hover:bg-gray-50 ios-shadow"
+                          ? "bg-gray-900 text-white scale-[1.02]" 
+                          : "bg-white hover:bg-gray-50 text-gray-600"
                       )}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center justify-between gap-3 relative z-10">
+                        <div className="flex items-center gap-4 min-w-0">
                           <div className={cn(
-                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                            activeGondolaId === g.id ? "bg-white/20" : "bg-primary/10 text-primary"
+                            "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300",
+                            activeGondolaId === g.id 
+                              ? "bg-white/10 text-white rotate-3" 
+                              : "bg-gray-50 text-gray-400 group-hover/rak:bg-primary/10 group-hover/rak:text-primary"
                           )}>
-                            <Layers size={18} />
+                            <Layers size={22} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-bold truncate">{g.settings.name}</p>
+                            <div className="flex items-center gap-2">
+                              <p className={cn(
+                                "text-sm font-black tracking-tight truncate",
+                                activeGondolaId === g.id ? "text-white" : "text-gray-900"
+                              )}>{g.settings.name}</p>
+                              {activeGondolaId === g.id && (
+                                <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                              )}
+                            </div>
                             <p className={cn(
-                              "text-[10px] font-medium opacity-60",
-                              activeGondolaId === g.id ? "text-white" : "text-gray-500"
+                              "text-[10px] font-bold uppercase tracking-widest mt-0.5",
+                              activeGondolaId === g.id ? "text-white/70" : "text-gray-400"
                             )}>
-                              {g.settings.shelfCount} Selving · {g.shelves.flat().length} Produk
+                              {g.settings.shelfCount} Shelves · {g.shelves.flat().length} Items
                             </p>
                           </div>
                         </div>
                         
-                        {gondolas.length > 1 && (
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onRemoveGondola(g.id);
-                            }}
-                            className={cn(
-                              "p-2 rounded-lg opacity-0 group-hover/rak:opacity-100 transition-all",
-                              activeGondolaId === g.id ? "hover:bg-white/20 text-white" : "hover:bg-red-50 text-red-500"
-                            )}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
+                        <div className="flex items-center gap-1">
+                          {activeGondolaId === g.id && (
+                            <div className="bg-white/20 p-1.5 rounded-full">
+                              <Check size={12} className="text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                          {gondolas.length > 1 && (
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onRemoveGondola(g.id);
+                              }}
+                              className={cn(
+                                "p-2 rounded-xl transition-all",
+                                activeGondolaId === g.id 
+                                  ? "text-gray-400 hover:text-white hover:bg-white/10" 
+                                  : "text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover/rak:opacity-100"
+                              )}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </Card>
+                      
+                      {activeGondolaId === g.id && (
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -266,35 +287,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {activeTab === 'products' && (
-            <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[11px] font-semibold text-gray-500">Manage Products</Label>
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={onExportExcel}
+                  className="h-8 text-[10px] font-bold rounded-xl bg-gray-100 hover:bg-gray-200 border-none shadow-none"
+                >
+                  <FileSpreadsheet size={12} className="mr-1.5 text-green-600" /> Export
+                </Button>
+                
+                <div className="relative">
+                  <input 
+                    type="file" 
+                    id="excel-import" 
+                    className="hidden" 
+                    accept=".xlsx, .xls"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) onImportExcel(file);
+                    }}
+                  />
                   <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsFormOpen(!isFormOpen)}
-                    className={cn(
-                      "h-8 px-3 rounded-full text-[10px] font-bold transition-all",
-                      isFormOpen ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
-                    )}
+                    variant="secondary" 
+                    size="sm"
+                    onClick={() => document.getElementById('excel-import')?.click()}
+                    className="h-8 text-[10px] font-bold rounded-xl bg-gray-100 hover:bg-gray-200 w-full border-none shadow-none"
                   >
-                    {isFormOpen ? (
-                      <><X size={12} className="mr-1" /> Close Form</>
-                    ) : (
-                      <><Plus size={12} className="mr-1" /> New Product</>
-                    )}
+                    <Upload size={12} className="mr-1.5 text-blue-600" /> Import
                   </Button>
                 </div>
+              </div>
 
+              <div className="space-y-4">
                 {isFormOpen && (
-                  <div className="bg-gray-50/50 p-4 rounded-3xl space-y-4 border border-white/50 animate-in zoom-in-95 duration-300">
+                  <div className="bg-gray-50/50 p-4 rounded-3xl space-y-4 animate-in zoom-in-95 duration-300">
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <Label className="text-[11px] font-semibold text-gray-500 ml-1">Product Image</Label>
                         <div className="flex gap-3 items-center">
                           <div 
-                            className="w-16 h-16 rounded-xl bg-white ios-shadow flex items-center justify-center overflow-hidden relative group cursor-pointer"
+                            className="w-16 h-16 rounded-xl bg-white flex items-center justify-center overflow-hidden relative group cursor-pointer"
                             onClick={() => document.getElementById('image-upload')?.click()}
                           >
                             {newProduct.image ? (
@@ -317,9 +351,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               onChange={handleImageUpload}
                             />
                             <Button 
-                              variant="outline" 
+                              variant="secondary" 
                               size="sm" 
-                              className="h-8 text-[10px] w-full rounded-lg border-none ios-shadow bg-white"
+                              className="h-8 text-[10px] w-full rounded-lg bg-gray-100 hover:bg-gray-200 border-none shadow-none"
                               onClick={() => document.getElementById('image-upload')?.click()}
                             >
                               <Upload size={12} className="mr-2" /> Upload Photo
@@ -342,7 +376,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <select 
                           value={newProduct.gondolaId}
                           onChange={e => setNewProduct({...newProduct, gondolaId: e.target.value})}
-                          className="w-full h-10 text-sm bg-white border-none rounded-xl ios-shadow px-3 focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+                          className="w-full h-10 text-sm bg-white rounded-xl px-3 focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
                         >
                           <option value="" disabled>-- Pilih Rak (Gondola) --</option>
                           {gondolas.map(g => (
@@ -356,7 +390,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           placeholder="Product Name" 
                           value={newProduct.name}
                           onChange={e => setNewProduct({...newProduct, name: e.target.value})}
-                          className="h-10 text-sm bg-white border-none rounded-xl ios-shadow focus:ring-2 focus:ring-primary/20"
+                          className="h-10 text-sm bg-white rounded-xl focus:ring-2 focus:ring-primary/20"
                         />
                       </div>
                       
@@ -366,7 +400,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="SKU (e.g. REF-001)" 
                             value={newProduct.sku}
                             onChange={e => setNewProduct({...newProduct, sku: e.target.value})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -374,7 +408,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="PLU" 
                             value={newProduct.plu}
                             onChange={e => setNewProduct({...newProduct, plu: e.target.value})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                       </div>
@@ -388,7 +422,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="Facing (Lebar)"
                             value={newProduct.facing}
                             onChange={e => setNewProduct({...newProduct, facing: parseInt(e.target.value) || 1})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -397,7 +431,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="RH (Hari Retur)" 
                             value={newProduct.rh}
                             onChange={e => setNewProduct({...newProduct, rh: parseInt(e.target.value) || 0})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                       </div>
@@ -409,7 +443,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="Selving (Rak #)"
                             value={newProduct.shelf || ''}
                             onChange={e => setNewProduct({...newProduct, shelf: parseInt(e.target.value) || undefined})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                         <div className="space-y-1.5">
@@ -418,7 +452,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             placeholder="Baris (Posisi #)"
                             value={newProduct.slot || ''}
                             onChange={e => setNewProduct({...newProduct, slot: parseInt(e.target.value) || undefined})}
-                            className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
+                            className="h-10 text-sm bg-white rounded-xl"
                           />
                         </div>
                       </div>
@@ -427,8 +461,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {editingProductId && (
                           <Button 
                             onClick={cancelEdit} 
-                            variant="outline"
-                            className="flex-1 h-10 font-bold rounded-xl border-none ios-shadow bg-white hover:bg-gray-50"
+                            variant="secondary"
+                            className="flex-1 h-10 font-bold rounded-xl bg-gray-100 hover:bg-gray-200 border-none shadow-none"
                           >
                             Cancel
                           </Button>
@@ -449,37 +483,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[11px] font-semibold text-gray-500">Catalog</Label>
-                  <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    {filteredProducts.length} Items
-                  </span>
-                </div>
-
                 <div className="relative group">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                   <Input 
-                    placeholder="Search name, PLU, or SKU..." 
+                    placeholder="" 
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    className="h-9 pl-9 text-xs bg-gray-50/50 border-none rounded-xl ios-shadow focus:ring-2 focus:ring-primary/20"
+                    className="h-9 pl-9 text-xs bg-gray-50/50 rounded-xl focus:ring-2 focus:ring-primary/20 border-none"
                   />
                 </div>
 
                 <div className="space-y-2">
                   {filteredProducts.map(p => (
                         <div key={p.id}>
-                          <Card 
+                          <div 
                             onClick={() => onSelectProduct(selectedProductId === p.id ? null : p.id)}
                             className={cn(
-                              "p-3 cursor-pointer transition-all border-none rounded-2xl relative overflow-hidden",
+                              "p-3 cursor-pointer transition-all rounded-2xl relative overflow-hidden",
                               selectedProductId === p.id 
-                                ? "bg-primary text-white ios-shadow" 
-                                : "bg-white hover:bg-gray-50 ios-shadow"
+                                ? "bg-gray-900 text-white" 
+                                : "bg-white hover:bg-gray-50"
                             )}
                           >
                             <div className="flex items-start gap-3">
-                              <div className="w-12 h-12 rounded-xl shrink-0 shadow-inner flex items-center justify-center text-xs font-bold overflow-hidden mt-0.5 bg-primary/10 text-primary">
+                              <div className={cn(
+                                "w-12 h-12 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold overflow-hidden mt-0.5 transition-colors",
+                                selectedProductId === p.id ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                              )}>
                                 {p.image ? (
                                   <img src={p.image} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                                 ) : (
@@ -488,7 +518,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               </div>
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="flex justify-between items-start gap-2">
-                                  <p className="text-sm font-bold leading-tight pt-0.5">{p.name}</p>
+                                  <p className={cn(
+                                    "text-sm font-bold leading-tight pt-0.5",
+                                    selectedProductId === p.id ? "text-white" : "text-gray-900"
+                                  )}>{p.name}</p>
                                   <div className="flex items-center gap-0.5 shrink-0">
                                     <button 
                                       onClick={(e) => { e.stopPropagation(); handleEdit(p); }}
@@ -507,94 +540,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     </button>
                                   </div>
                                 </div>
-                                <p className={cn("text-[11px] font-medium opacity-60", selectedProductId === p.id ? "text-white" : "text-gray-500")}>
+                                <p className={cn(
+                                  "text-[11px] font-medium opacity-60", 
+                                  selectedProductId === p.id ? "text-gray-300" : "text-gray-500"
+                                )}>
                                   {p.sku} · {p.facing} Facing
                                 </p>
                               </div>
                             </div>
-                          </Card>
+                          </div>
                         </div>
                       ))}
                     </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'gondola' && (
-            <div className="space-y-6 animate-in fade-in duration-500">
-              <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[11px] font-semibold text-gray-500 ml-1">Gondola Name</Label>
-                    <Input 
-                      value={settings.name}
-                      onChange={e => onUpdateSettings({...settings, name: e.target.value})}
-                      className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold text-gray-500 ml-1">Levels</Label>
-                      <Input 
-                        type="number"
-                        min={1}
-                        max={8}
-                        value={settings.shelfCount}
-                        onChange={e => onUpdateSettings({...settings, shelfCount: parseInt(e.target.value) || 1})}
-                        className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold text-gray-500 ml-1">Category</Label>
-                      <Input 
-                        value={settings.category}
-                        onChange={e => onUpdateSettings({...settings, category: e.target.value})}
-                        className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[11px] font-semibold text-gray-500 ml-1">Store</Label>
-                    <Input 
-                      value={settings.store}
-                      onChange={e => onUpdateSettings({...settings, store: e.target.value})}
-                      className="h-10 text-sm bg-white border-none rounded-xl ios-shadow"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-                <Label className="text-[11px] font-semibold text-gray-500 ml-1">Data Management (Excel)</Label>
-                <div className="grid grid-cols-1 gap-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={onExportExcel}
-                    className="h-10 font-bold rounded-xl border-none ios-shadow bg-white hover:bg-gray-50 justify-start"
-                  >
-                    <FileSpreadsheet size={16} className="mr-2 text-green-600" /> Export Data
-                  </Button>
-                  
-                  <div className="relative">
-                    <input 
-                      type="file" 
-                      id="excel-import" 
-                      className="hidden" 
-                      accept=".xlsx, .xls"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) onImportExcel(file);
-                      }}
-                    />
-                    <Button 
-                      variant="outline" 
-                      onClick={() => document.getElementById('excel-import')?.click()}
-                      className="h-10 font-bold rounded-xl border-none ios-shadow bg-white hover:bg-gray-50 justify-start w-full"
-                    >
-                      <Upload size={16} className="mr-2 text-blue-600" /> Import Data
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
           )}
@@ -607,4 +564,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
 
 
-const Separator = () => <div className="h-px bg-border my-2" />;
+const Separator = () => <div className="h-px my-2" />;

@@ -388,7 +388,7 @@ export default function App() {
     <div className="flex flex-col h-screen h-[100dvh] bg-[#F2F2F7] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
       <Toaster position="top-right" theme="light" expand={true} richColors />
       
-      <header className="h-16 glass flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0 border-b border-white/20">
+      <header className="h-14 md:h-16 glass flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0 border-b border-white/20">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <Button 
             variant="ghost" 
@@ -441,7 +441,7 @@ export default function App() {
         </AnimatePresence>
 
         <div className={cn(
-          "fixed md:relative inset-y-0 left-0 z-50 md:z-auto transition-transform duration-500 transform md:translate-x-0 w-[85%] max-w-[320px] md:w-80 h-full md:h-full shadow-2xl md:shadow-none p-2 md:p-0",
+          "fixed md:relative inset-y-0 left-0 z-50 md:z-auto transition-transform duration-500 transform md:translate-x-0 w-[85%] max-w-[320px] md:w-80 h-full md:h-full md:shadow-none p-1 md:p-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-[110%]"
         )}>
           <Sidebar 

@@ -33,48 +33,28 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
   const totalFacing = shelves.flat().reduce((acc, p) => acc + p.facing, 0);
 
   return (
-    <div className="flex-1 h-full p-3 md:p-8 overflow-auto relative custom-scrollbar">
-      <div className="max-w-5xl mx-auto space-y-4 md:space-y-8 relative z-10">
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-gray-200 pb-4 md:pb-8 gap-3 md:gap-4 print:hidden">
-          <div className="space-y-1 w-full md:w-auto">
-            <h2 className="text-xl md:text-4xl font-bold tracking-tight text-gray-900 break-words line-clamp-2 leading-tight">{settings.name}</h2>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] md:text-sm font-medium text-gray-500">
-              <span className="bg-gray-100 px-2 py-0.5 rounded-md">{settings.category}</span>
-              <span className="hidden md:inline w-1 h-1 rounded-full bg-gray-300" />
-              <span className="bg-gray-100 px-2 py-0.5 rounded-md">{settings.store || 'No Store'}</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-between w-full md:w-auto gap-2 mt-1 md:mt-0">
-            <div className="flex items-center gap-2">
-              <div className="hidden md:block w-px h-8 bg-gray-200 mx-1 md:mx-2" />
-              <div className="text-right shrink-0">
-                <p className="text-2xl md:text-5xl font-bold tracking-tighter text-primary leading-none">{totalFacing}</p>
-                <p className="text-[8px] md:text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-0.5 md:mt-1">Total Units</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+    <div className="flex-1 h-full p-2 md:p-4 overflow-auto relative custom-scrollbar">
+      <div className="max-w-5xl mx-auto space-y-0.5 md:space-y-2 relative z-10">
         <div 
           ref={canvasRef}
-          className="bg-white/70 backdrop-blur-sm rounded-[1.2rem] md:rounded-[2.5rem] ios-shadow p-3 md:p-8 relative overflow-hidden border border-white print:shadow-none print:border-none print:bg-white"
+          className="bg-white/70 backdrop-blur-sm rounded-[1.2rem] md:rounded-[2.5rem] p-1 md:p-2 relative overflow-hidden print:shadow-none print:border-none print:bg-white"
         >
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-1 md:space-y-2">
             {Array.from({ length: settings.shelfCount }).map((_, si) => {
               const shelf = shelves[si] || [];
               const levelName = SHELF_LEVELS[si] || `Selving ${si + 1}`;
               
               return (
-                <div key={si} className="flex flex-col md:flex-row items-start md:items-end gap-2 md:gap-8 group">
-                  <div className="w-full md:w-24 shrink-0 text-left md:text-right pb-0 md:pb-4">
-                    <p className="text-[9px] md:text-[11px] font-bold text-gray-400 group-hover:text-primary transition-colors uppercase tracking-widest">
-                      {levelName}
-                    </p>
-                  </div>
-                  
-                  <div className="w-full relative overflow-x-auto pb-4 custom-scrollbar">
-                    <div className="flex items-end gap-2 md:gap-3 min-h-[180px] md:min-h-[220px] px-2 md:px-6 pt-4 w-max">
-                      <AnimatePresence mode="popLayout">
+                <div 
+                  key={si} 
+                  className="w-full relative overflow-x-auto pb-1 md:pb-2 custom-scrollbar group"
+                  onClick={() => selectedProductId && onPlaceProduct(si)}
+                >
+                  <div className={cn(
+                    "flex items-end gap-1 md:gap-2 min-h-[160px] md:min-h-[200px] px-2 md:px-4 pt-2 w-max transition-all rounded-xl",
+                    selectedProductId && "bg-primary/5 cursor-pointer hover:bg-primary/10 ring-2 ring-primary/20 ring-inset"
+                  )}>
+                    <AnimatePresence mode="popLayout">
                         {shelf.map((p, pi) => (
                           <motion.div
                             key={`${si}-${pi}-${p.id}`}
@@ -84,11 +64,12 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                             className="relative group/product cursor-pointer"
                           >
                             <div 
-                              onClick={() => setDetailInfo({ product: p, si, pi })}
+                              onClick={(e) => { e.stopPropagation(); setDetailInfo({ product: p, si, pi }); }}
                               className={cn(
-                                "rounded-xl shadow-lg flex flex-col items-center justify-center p-2 md:p-3 text-center transition-all border border-white/20 overflow-hidden relative",
+                                "rounded-xl flex flex-col items-center justify-center p-2 md:p-3 text-center transition-all overflow-hidden relative",
                                 p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16",
-                                !p.image && "bg-primary/20"
+                                !p.image && "bg-primary/20",
+                                selectedProductId === p.id && "ring-2 ring-primary ring-inset bg-primary/5"
                               )}
                               style={{ 
                                 height: `${window.innerWidth < 768 ? 140 + (settings.shelfCount - si) * 5 : 180 + (settings.shelfCount - si) * 8}px`,
@@ -98,7 +79,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                               {p.image ? (
                                 <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-contain p-1" referrerPolicy="no-referrer" />
                               ) : (
-                                <span className="text-[10px] font-bold text-primary leading-tight drop-shadow-sm relative z-10">
+                                <span className="text-[10px] font-bold text-primary leading-tight relative z-10">
                                   {p.name}
                                 </span>
                               )}
@@ -106,7 +87,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                               <div className="absolute inset-0 bg-black/0 group-hover/product:bg-black/10 transition-colors" />
                               
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/product:opacity-100 transition-opacity pointer-events-none">
-                                <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-lg ios-shadow">
+                                <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-lg">
                                   <Maximize2 size={14} className="text-primary" />
                                 </div>
                               </div>
@@ -114,34 +95,20 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
 
                             <button 
                               onClick={(e) => { e.stopPropagation(); onRemoveFromShelf(si, pi); }}
-                              className="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center opacity-100 md:opacity-0 group-hover/product:opacity-100 transition-all ios-shadow border border-gray-100 z-30 hover:bg-red-50"
+                              className="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center opacity-100 md:opacity-0 group-hover/product:opacity-100 transition-all z-30 hover:bg-red-50"
                             >
                               <Trash2 size={14} />
                             </button>
                           </motion.div>
                         ))}
                       </AnimatePresence>
-
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => onPlaceProduct(si)}
-                        className={cn(
-                          "w-14 md:w-16 h-24 md:h-32 border-2 border-dashed rounded-xl flex items-center justify-center transition-all shrink-0",
-                          selectedProductId 
-                            ? "border-primary/40 bg-primary/5 text-primary animate-pulse" 
-                            : "border-gray-200 text-gray-300 hover:border-gray-300 hover:text-gray-400"
-                        )}
-                      >
-                        <Plus size={20} className="md:w-[24px] md:h-[24px]" strokeWidth={2.5} />
-                      </motion.button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+
       </div>
       <ProductDetailModal 
         product={detailInfo?.product || null} 
