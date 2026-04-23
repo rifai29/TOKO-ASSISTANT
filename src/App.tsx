@@ -413,17 +413,15 @@ export default function App() {
 
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => {
             setActiveTab('products');
             setIsFormOpen(true);
             setIsSidebarOpen(true);
           }}
-          className="h-9 px-2 md:px-4 rounded-full bg-primary/10 text-primary hover:bg-primary/20 font-bold text-[10px] md:text-xs"
+          className="h-10 w-10 rounded-xl bg-gray-200/80 text-black hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
         >
-          <Plus size={14} className="md:mr-2" /> 
-          <span className="hidden md:inline">Add Product</span>
-          <span className="md:hidden ml-1">Add</span>
+          <Plus size={24} strokeWidth={3} />
         </Button>
       </header>
 

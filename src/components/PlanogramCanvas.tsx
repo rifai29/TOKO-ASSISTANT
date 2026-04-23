@@ -102,6 +102,20 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                           </motion.div>
                         ))}
                       </AnimatePresence>
+
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(
+                          "w-14 h-24 md:h-32 rounded-xl flex items-center justify-center shrink-0 transition-all border-2 border-dashed",
+                          selectedProductId 
+                            ? "border-primary bg-primary/20 text-primary animate-pulse cursor-pointer shadow-md ring-4 ring-primary/10" 
+                            : "border-gray-200 bg-gray-100/30 text-black hover:border-gray-300 hover:bg-gray-100/50"
+                        )}
+                        onClick={() => selectedProductId && onPlaceProduct(si)}
+                      >
+                        <Plus size={36} strokeWidth={4} />
+                      </motion.div>
                     </div>
                   </div>
                 );
