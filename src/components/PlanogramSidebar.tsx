@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Trash2, Check, Package, Camera, Upload, X, Pencil, FileSpreadsheet, Layers } from 'lucide-react';
+import { Plus, Trash2, Check, Package, Camera, Upload, X, Pencil, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import Barcode from 'react-barcode';
@@ -21,8 +21,6 @@ interface SidebarProps {
   settings: any;
   onUpdateSettings: (settings: any) => void;
   onUpdateProduct: (id: string, updates: Partial<Product>) => void;
-  onExportExcel: () => void;
-  onImportExcel: (file: File) => void;
   onCloseMobile?: () => void;
   gondolas: Gondola[];
   activeGondolaId: string;
@@ -46,8 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   settings,
   onUpdateSettings,
   onUpdateProduct,
-  onExportExcel,
-  onImportExcel,
   onCloseMobile,
   gondolas,
   activeGondolaId,
@@ -288,38 +284,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {activeTab === 'products' && (
             <div className="space-y-4 animate-in fade-in duration-500">
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  variant="secondary" 
-                  size="sm"
-                  onClick={onExportExcel}
-                  className="h-8 text-[10px] font-bold rounded-xl bg-gray-100 hover:bg-gray-200 border-none shadow-none"
-                >
-                  <FileSpreadsheet size={12} className="mr-1.5 text-green-600" /> Export
-                </Button>
-                
-                <div className="relative">
-                  <input 
-                    type="file" 
-                    id="excel-import" 
-                    className="hidden" 
-                    accept=".xlsx, .xls"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) onImportExcel(file);
-                    }}
-                  />
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    onClick={() => document.getElementById('excel-import')?.click()}
-                    className="h-8 text-[10px] font-bold rounded-xl bg-gray-100 hover:bg-gray-200 w-full border-none shadow-none"
-                  >
-                    <Upload size={12} className="mr-1.5 text-blue-600" /> Import
-                  </Button>
-                </div>
-              </div>
-
               <div className="space-y-4">
                 {isFormOpen && (
                   <div className="bg-gray-50/50 p-4 rounded-3xl space-y-4 animate-in zoom-in-95 duration-300">

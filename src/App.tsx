@@ -3,7 +3,7 @@ import { Sidebar } from './components/PlanogramSidebar';
 import { PlanogramCanvas } from './components/PlanogramCanvas';
 import { Product, GondolaSettings, PlanogramState, Gondola } from './types';
 import { Button } from '@/components/ui/button';
-import { Menu, X as CloseIcon, Plus } from 'lucide-react';
+import { Menu, X as CloseIcon, Plus, FileSpreadsheet, Upload } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
@@ -400,29 +400,66 @@ export default function App() {
           </Button>
           <div className="flex items-center gap-2 md:gap-3 group cursor-pointer overflow-hidden">
             <div className="flex flex-col overflow-hidden">
-              <h1 className="font-bold text-sm md:text-lg tracking-tight leading-none truncate uppercase">PLANOGRAM ASSISTANT</h1>
+              <h1 className="font-bold text-sm md:text-lg tracking-tight leading-none truncate uppercase">
+                PLANOGRAM <span className="hidden sm:inline">ASSISTANT</span>
+              </h1>
               <div className="flex items-center gap-1.5 mt-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">
-                  ACTIVE: {activeGondola.settings.name}
+                <span className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">
+                  <span className="hidden xs:inline">ACTIVE: </span>{activeGondola.settings.name}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            setActiveTab('products');
-            setIsFormOpen(true);
-            setIsSidebarOpen(true);
-          }}
-          className="h-10 w-10 rounded-xl bg-gray-200/80 text-black hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
-        >
-          <Plus size={24} strokeWidth={3} />
-        </Button>
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="relative">
+            <input 
+              type="file" 
+              id="excel-import-header" 
+              className="hidden" 
+              accept=".xlsx, .xls"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleImportExcel(file);
+              }}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => document.getElementById('excel-import-header')?.click()}
+              className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-blue-600 hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+              title="Import Excel"
+            >
+              <Upload size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
+            </Button>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleExportExcel}
+            className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-green-600 hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            title="Export Excel"
+          >
+            <FileSpreadsheet size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              setActiveTab('products');
+              setIsFormOpen(true);
+              setIsSidebarOpen(true);
+            }}
+            className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-black hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            title="Add Product"
+          >
+            <Plus size={22} className="md:w-[24px] md:h-[24px]" strokeWidth={3} />
+          </Button>
+        </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden relative p-2 md:p-4 gap-2 md:gap-4">
@@ -456,8 +493,6 @@ export default function App() {
             settings={activeGondola.settings}
             onUpdateSettings={handleUpdateSettings}
             onUpdateProduct={handleUpdateProduct}
-            onExportExcel={handleExportExcel}
-            onImportExcel={handleImportExcel}
             onCloseMobile={() => setIsSidebarOpen(false)}
             gondolas={state.gondolas}
             activeGondolaId={state.activeGondolaId}
