@@ -5,9 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Trash2, Check, Package, Camera, Upload, X, Pencil, Layers } from 'lucide-react';
+import { Plus, Trash2, Check, Package, Camera, Upload, X, Pencil, Layers, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import Barcode from 'react-barcode';
 
 interface SidebarProps {
@@ -67,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
 
   // Update newProduct when activeGondolaId changes if not editing
   React.useEffect(() => {
@@ -166,25 +167,72 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="px-4 mt-0 md:mt-2 mb-2">
-        <div className="bg-gray-100/80 p-1 rounded-2xl flex gap-1">
-          {[
-            { id: 'products', label: 'Catalog', icon: Package },
-            { id: 'rak', label: 'Rak', icon: Layers },
-          ].map((tab) => (
+        <div className="bg-gray-100/80 p-1 rounded-2xl flex flex-col gap-1 w-full">
+          <div className="flex items-center gap-1 w-full">
+            {[
+              { id: 'products', label: 'Catalog', icon: LayoutGrid },
+              { id: 'rak', label: 'Rak', icon: LayoutGrid },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex-1 h-8 md:h-10 px-0.5 text-[9px] md:text-[10px] font-bold flex items-center justify-center gap-1 transition-all rounded-xl",
+                  activeTab === tab.id 
+                    ? "bg-white text-primary shadow-sm" 
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                )}
+              >
+                <tab.icon size={12} strokeWidth={2.5} className="shrink-0" />
+                <span className="truncate">{tab.label}</span>
+              </button>
+            ))}
+
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setShowSearch(!showSearch)}
               className={cn(
-                "flex-1 py-2 px-1 text-[10px] md:text-[11px] font-semibold flex items-center justify-center gap-1.5 md:gap-2 transition-all rounded-lg",
-                activeTab === tab.id 
-                  ? "bg-white text-primary" 
-                  : "text-gray-500 hover:text-gray-700"
+                "flex-1 h-8 md:h-10 px-0.5 text-[9px] md:text-[10px] font-bold flex items-center justify-center transition-all rounded-xl",
+                showSearch 
+                  ? "bg-white text-primary shadow-sm" 
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
               )}
+              title="Search Catalog"
             >
-              <tab.icon size={14} strokeWidth={2.5} />
-              {tab.label}
+              <Search size={14} strokeWidth={2.5} />
             </button>
-          ))}
+            
+            <div className="flex-1 flex items-center justify-center px-1 h-8 md:h-10 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60 shrink-0">
+              <span className="text-[9px] md:text-[10px] font-black text-gray-900 uppercase tracking-tighter truncate">
+                {settings.name}
+              </span>
+            </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {showSearch && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="px-1 pb-1"
+              >
+                <div className="relative group mt-1">
+                  <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors shrink-0" />
+                  <input 
+                    autoFocus
+                    placeholder="Cari katalog..." 
+                    value={searchTerm}
+                    onChange={e => {
+                      setActiveTab('products');
+                      setSearchTerm(e.target.value);
+                    }}
+                    onBlur={() => !searchTerm && setShowSearch(false)}
+                    className="w-full h-8 md:h-10 pl-8 pr-3 text-[10px] md:text-xs bg-white/80 rounded-xl border-none transition-all placeholder:text-gray-400 font-bold outline-none shadow-sm focus:bg-white"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -225,7 +273,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               ? "bg-white/10 text-white rotate-3" 
                               : "bg-gray-50 text-gray-400 group-hover/rak:bg-primary/10 group-hover/rak:text-primary"
                           )}>
-                            <Layers size={22} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
+                            <LayoutGrid size={22} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
@@ -447,16 +495,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
 
               <div className="space-y-3">
-                <div className="relative group">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                  <Input 
-                    placeholder="" 
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                    className="h-9 pl-9 text-xs bg-gray-50/50 rounded-xl focus:ring-2 focus:ring-primary/20 border-none"
-                  />
-                </div>
-
                 <div className="space-y-2">
                   {filteredProducts.map(p => (
                         <div key={p.id}>

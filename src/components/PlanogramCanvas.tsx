@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProductDetailModal } from './ProductDetailModal';
 import html2canvas from 'html2canvas';
-import { toast } from 'sonner';
 import Barcode from 'react-barcode';
 
 interface CanvasProps {

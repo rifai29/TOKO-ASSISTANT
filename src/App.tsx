@@ -4,7 +4,6 @@ import { PlanogramCanvas } from './components/PlanogramCanvas';
 import { Product, GondolaSettings, PlanogramState, Gondola } from './types';
 import { Button } from '@/components/ui/button';
 import { Menu, X as CloseIcon, Plus, FileSpreadsheet, Upload } from 'lucide-react';
-import { toast, Toaster } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import * as XLSX from 'xlsx';
@@ -124,7 +123,6 @@ export default function App() {
         activeGondolaId: targetGondolaId // Switch to the target gondola to see the added product
       };
     });
-    toast.success(`Product "${product.name}" added to Rak`);
   };
 
   const handleRemoveProduct = (id: string) => {
@@ -137,7 +135,6 @@ export default function App() {
       }))
     }));
     if (selectedProductId === id) setSelectedProductId(null);
-    toast.info("Product removed from catalog and shelves");
   };
 
   const handleUpdateProduct = (id: string, updates: Partial<Product>) => {
@@ -171,7 +168,6 @@ export default function App() {
 
   const handlePlaceProduct = (shelfIdx: number) => {
     if (!selectedProductId) {
-      toast.error("Please select a product from the sidebar first");
       return;
     }
     const product = state.products.find(p => p.id === selectedProductId);
@@ -212,12 +208,10 @@ export default function App() {
       gondolas: [...prev.gondolas, newGondola],
       activeGondolaId: id
     }));
-    toast.success("New Rak added");
   };
 
   const handleRemoveGondola = (id: string) => {
     if (state.gondolas.length <= 1) {
-      toast.error("Cannot remove the last Rak");
       return;
     }
     setState(prev => {
@@ -225,7 +219,6 @@ export default function App() {
       const newActiveId = prev.activeGondolaId === id ? newGondolas[0].id : prev.activeGondolaId;
       return { ...prev, gondolas: newGondolas, activeGondolaId: newActiveId };
     });
-    toast.info("Rak removed");
   };
 
   const handleExportExcel = () => {
@@ -264,7 +257,6 @@ export default function App() {
     });
 
     XLSX.writeFile(wb, `Planogram_Full.xlsx`);
-    toast.success("Excel exported successfully with separate sheets for each Rak.");
   };
 
   const handleImportExcel = (file: File) => {
@@ -365,7 +357,6 @@ export default function App() {
         });
 
         if (newGondolas.length === 0) {
-          toast.error("No valid data found in Excel");
           return;
         }
 
@@ -375,10 +366,8 @@ export default function App() {
           activeGondolaId: newGondolas[0].id
         });
         setActiveTab('rak');
-        toast.success(`Imported ${newGondolas.length} Raks successfully`);
       } catch (error) {
         console.error("Import error:", error);
-        toast.error("Failed to import Excel.");
       }
     };
     reader.readAsArrayBuffer(file);
@@ -386,7 +375,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen h-[100dvh] bg-[#F2F2F7] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
-      <Toaster position="top-right" theme="light" expand={true} richColors />
       
       <header className="h-14 md:h-16 glass flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0 border-b border-white/20">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
@@ -398,19 +386,6 @@ export default function App() {
           >
             {isSidebarOpen ? <CloseIcon size={20} /> : <Menu size={20} />}
           </Button>
-          <div className="flex items-center gap-2 md:gap-3 group cursor-pointer overflow-hidden">
-            <div className="flex flex-col overflow-hidden">
-              <h1 className="font-bold text-sm md:text-lg tracking-tight leading-none truncate uppercase">
-                PLANOGRAM <span className="hidden sm:inline">ASSISTANT</span>
-              </h1>
-              <div className="flex items-center gap-1.5 mt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">
-                  <span className="hidden xs:inline">ACTIVE: </span>{activeGondola.settings.name}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="flex items-center gap-1.5 md:gap-2">
