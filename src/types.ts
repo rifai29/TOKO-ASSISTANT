@@ -9,6 +9,8 @@ export interface Product {
   shelf?: number;
   slot?: number;
   gondolaId?: string; // Added to track which gondola it belongs to
+  expiryDate?: string;
+  lastChecked?: string;
 }
 
 export interface GondolaSettings {
@@ -28,6 +30,7 @@ export interface Gondola {
   id: string;
   settings: GondolaSettings;
   shelves: Product[][];
+  lastUpdated?: string;
 }
 
 export interface PlanogramState {
