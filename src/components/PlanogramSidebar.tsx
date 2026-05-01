@@ -79,6 +79,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   }, [activeGondolaId, editingProductId]);
 
+  const filteredGondolas = gondolas.filter(g => 
+    g.settings.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const filteredProducts = products.filter(p => {
     const matchesSearch = 
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -154,59 +158,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="w-full md:w-80 flex flex-col h-full overflow-hidden z-20">
-      {/* Mobile Header */}
-      <div className="flex items-center justify-end px-4 pt-2 pb-1 md:hidden">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onCloseMobile}
-          className="h-8 w-8 rounded-xl bg-gray-100 text-gray-500"
-        >
-          <X size={16} />
-        </Button>
-      </div>
-
-      <div className="px-4 mt-0 md:mt-2 mb-2">
-        <div className="bg-gray-200/50 p-1 rounded-2xl flex flex-col gap-1 w-full">
+    <aside className="w-full md:w-80 flex flex-col h-full overflow-hidden z-20 bg-white">
+      <div className="px-1.5 pt-1 mb-1">
+        <div className="bg-gray-100 p-1 rounded-2xl flex flex-col gap-1 w-full">
           <div className="flex items-center gap-1 w-full">
             {[
               { id: 'products', icon: LayoutGrid, title: 'Catalog' },
-              { id: 'rak', icon: LayoutGrid, title: 'Rak' },
+              { id: 'rak', icon: Layers, title: 'Rak' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 title={tab.title}
                 className={cn(
-                  "flex-1 h-8 md:h-10 px-0.5 flex items-center justify-center transition-all rounded-xl",
+                  "flex-1 h-7 md:h-8 flex items-center justify-center transition-all rounded-xl",
                   activeTab === tab.id 
                     ? "bg-white text-primary" 
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                 )}
               >
-                <tab.icon size={16} strokeWidth={2.5} className="shrink-0" />
+                <tab.icon size={15} strokeWidth={2.5} className="shrink-0" />
               </button>
             ))}
 
             <button
               onClick={() => setShowSearch(!showSearch)}
               className={cn(
-                "flex-1 h-8 md:h-10 px-0.5 text-[9px] md:text-[10px] font-bold flex items-center justify-center transition-all rounded-xl",
+                "flex-1 h-7 md:h-8 text-[7px] md:text-[8px] font-bold flex items-center justify-center transition-all rounded-xl",
                 showSearch 
                   ? "bg-white text-primary" 
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
               )}
               title="Search Catalog"
             >
               <Search size={14} strokeWidth={2.5} />
             </button>
-            
-            <div className="flex-1 flex items-center justify-center px-1 h-8 md:h-10 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60 shrink-0">
-              <span className="text-[9px] md:text-[10px] font-black text-gray-900 uppercase tracking-tighter truncate">
-                {settings.name}
-              </span>
-            </div>
           </div>
 
           <AnimatePresence mode="wait">
@@ -215,20 +201,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="px-1 pb-1"
+                className="px-0.5"
               >
                 <div className="relative group mt-1">
-                  <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors shrink-0" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors shrink-0" />
                   <input 
                     autoFocus
-                    placeholder="Cari katalog..." 
+                    placeholder={activeTab === 'rak' ? "Cari rak..." : "Cari katalog..."} 
                     value={searchTerm}
                     onChange={e => {
-                      setActiveTab('products');
                       setSearchTerm(e.target.value);
                     }}
                     onBlur={() => !searchTerm && setShowSearch(false)}
-                    className="w-full h-8 md:h-10 pl-8 pr-3 text-[10px] md:text-xs bg-white/80 rounded-xl border-none transition-all placeholder:text-gray-400 font-bold outline-none focus:bg-white"
+                    className="w-full h-8 pl-8 pr-3 text-xs bg-white rounded-xl border-none transition-all placeholder:text-gray-400 font-bold outline-none"
                   />
                 </div>
               </motion.div>
@@ -237,13 +222,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 scrollbar-hide">
-        <div className="space-y-4 pb-4">
+      <div className="flex-1 overflow-y-auto px-1.5 scrollbar-hide">
+        <div className="space-y-1.5 pb-4">
           {activeTab === 'rak' && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-              <div className="space-y-4">
+            <div className="space-y-1.5 animate-in fade-in duration-500">
+              <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
-                  <Label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Daftar Rak</Label>
+                  <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest">Daftar Rak</Label>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -254,76 +239,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </Button>
                 </div>
 
-                <div className="space-y-3">
-                  {gondolas.map(g => (
-                      <div 
-                        onClick={() => onSelectGondola(g.id)}
-                        className={cn(
-                          "p-4 cursor-pointer transition-all rounded-[1.5rem] relative overflow-hidden group/rak",
-                          activeGondolaId === g.id 
-                            ? "bg-gray-200 text-gray-900" 
-                            : "hover:bg-gray-200/50 text-gray-600"
-                        )}
-                      >
-                      <div className="flex items-center justify-between gap-3 relative z-10">
-                        <div className="flex items-center gap-4 min-w-0">
+                <div className="space-y-1">
+                  {filteredGondolas.map(g => (
+                    <div 
+                      key={g.id}
+                      onClick={() => onSelectGondola(g.id)}
+                      className={cn(
+                        "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
+                        activeGondolaId === g.id 
+                          ? "bg-gray-200 text-gray-900 shadow-none border-none" 
+                          : "hover:bg-gray-100 text-gray-600 bg-white border border-gray-100"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-1 relative z-10">
+                        <div className="flex items-center gap-1.5 min-w-0">
                           <div className={cn(
-                            "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-300",
+                            "w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-all duration-300",
                             activeGondolaId === g.id 
-                              ? "bg-gray-300/50 text-gray-900 rotate-3" 
-                              : "bg-gray-50 text-gray-400 group-hover/rak:bg-primary/10 group-hover/rak:text-primary"
+                              ? "bg-gray-300 text-gray-900" 
+                              : "bg-gray-50 text-gray-400"
                           )}>
-                            <LayoutGrid size={22} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
+                            <LayoutGrid size={12} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className={cn(
-                                "text-sm font-black tracking-tight truncate",
-                                activeGondolaId === g.id ? "text-gray-900" : "text-gray-900"
-                              )}>{g.settings.name}</p>
-                            </div>
-                            <p className={cn(
-                              "text-[10px] font-bold uppercase tracking-widest mt-0.5",
-                              activeGondolaId === g.id ? "text-gray-500" : "text-gray-400"
-                            )}>
-                              {g.settings.shelfCount} Shelves · {g.shelves.flat().length} Items
-                            </p>
-                            {g.lastUpdated && (
-                              <p className={cn(
-                                "text-[8px] font-medium flex items-center gap-1 mt-1",
-                                activeGondolaId === g.id ? "text-gray-900/50" : "text-gray-300"
-                              )}>
-                                <Clock size={8} /> Update: {g.lastUpdated}
-                              </p>
-                            )}
+                            <p className="text-[10px] font-bold tracking-tight truncate text-gray-900">{g.settings.name}</p>
                           </div>
                         </div>
                         
                         <div className="flex items-center gap-1">
-                          {activeGondolaId === g.id && (
-                            <div className="bg-white/20 p-1.5 rounded-full">
-                              <Check size={12} className="text-white" strokeWidth={3} />
-                            </div>
-                          )}
                         </div>
                       </div>
-                      
-                      {activeGondolaId === g.id && (
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-                      )}
                     </div>
                   ))}
                 </div>
               </div>
-
             </div>
           )}
 
           {activeTab === 'products' && (
-            <div className="space-y-4 animate-in fade-in duration-500">
-              <div className="space-y-4">
+            <div className="space-y-2 animate-in fade-in duration-500">
+              <div className="space-y-2">
                 {isFormOpen && (
-                  <div className="bg-gray-50/50 p-4 rounded-3xl space-y-4 animate-in zoom-in-95 duration-300">
+                  <div className="bg-gray-50 p-4 rounded-3xl space-y-4 animate-in zoom-in-95 duration-300">
                     <div className="space-y-3">
                       <div className="space-y-1.5">
                         <select 
@@ -456,15 +413,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <div 
                           onClick={() => onSelectProduct(selectedProductId === p.id ? null : p.id)}
                           className={cn(
-                            "p-3 cursor-pointer transition-all rounded-2xl relative overflow-hidden",
+                            "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
                             selectedProductId === p.id 
                               ? "bg-gray-200 text-gray-900" 
-                              : "hover:bg-gray-200/50"
+                              : "hover:bg-gray-100"
                           )}
                         >
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-1">
                           <div className={cn(
-                            "w-12 h-12 rounded-xl shrink-0 flex items-center justify-center text-xs font-bold overflow-hidden mt-0.5 transition-colors",
+                            "w-6 h-6 rounded-md shrink-0 flex items-center justify-center text-[9px] font-bold overflow-hidden mt-0.5 transition-colors",
                             selectedProductId === p.id ? "bg-primary text-white" : "bg-primary/10 text-primary"
                           )}>
                             {p.image ? (
@@ -473,46 +430,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               (p.plu || 'P').substring(0, 1)
                             )}
                           </div>
-                          <div className="flex-1 min-w-0 space-y-1">
-                            <div className="flex justify-between items-start gap-2">
-                              <p className={cn(
-                                "text-sm font-bold leading-tight pt-0.5",
-                                "text-gray-900"
-                              )}>{p.name}</p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <p className="text-[10px] font-bold leading-tight truncate flex-1">{p.name}</p>
                               <div className="flex items-center gap-0.5 shrink-0">
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); handleEdit(p); }}
-                                  className={cn(
-                                    "p-1.5 rounded-lg transition-all", 
-                                    "hover:bg-primary/10 text-primary"
-                                  )}
-                                  title="Edit"
+                                  className="p-1 rounded-md text-primary hover:bg-white/50"
                                 >
-                                  <Pencil size={13} />
+                                  <Pencil size={10} />
                                 </button>
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); navigate(`/product/${p.id}`); }}
-                                  className={cn(
-                                    "p-1.5 rounded-lg transition-all", 
-                                    "hover:bg-primary/10 text-primary"
-                                  )}
-                                  title="Lihat Detail"
+                                  className="p-1 rounded-md text-primary hover:bg-white/50"
                                 >
-                                  <ExternalLink size={13} />
+                                  <ExternalLink size={10} />
                                 </button>
                               </div>
                             </div>
-                            <p className={cn(
-                              "text-[11px] font-medium opacity-60 flex items-center gap-2", 
-                              "text-gray-500"
-                            )}>
-                              <span>{p.sku} · {p.facing} Facing</span>
-                              {p.expiryDate && (
-                                <span className="flex items-center gap-1 text-orange-500 font-bold shrink-0">
-                                  <Calendar size={10} /> EXP: {p.expiryDate}
-                                </span>
-                              )}
-                            </p>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="text-[8px] font-bold text-gray-400 tabular-nums">{p.sku}</span>
+                              <span className="text-[8px] font-bold text-gray-500 opacity-60">• {p.facing}F</span>
+                            </div>
                           </div>
                         </div>
                       </div>

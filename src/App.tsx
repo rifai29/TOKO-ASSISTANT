@@ -77,18 +77,23 @@ function MainLayout({
   const activeGondola = state.gondolas.find((g: any) => g.id === state.activeGondolaId) || state.gondolas[0];
 
   return (
-    <div className="flex flex-col h-screen h-[100dvh] bg-[#F2F2F7] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
+    <div className="flex flex-col h-screen h-[100dvh] bg-[#F8F9FA] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
       
-      <header className="h-14 md:h-16 bg-white flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0">
+      <header className="h-14 md:h-16 bg-white flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0 border-b border-gray-100">
         <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden h-10 w-10 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
+            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-gray-600 hover:bg-gray-100 shrink-0"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
-            {isSidebarOpen ? <CloseIcon size={20} /> : <Menu size={20} />}
+            {isSidebarOpen ? <CloseIcon size={18} /> : <Menu size={18} />}
           </Button>
+          <div className="flex flex-col">
+            <h2 className="text-xs md:text-sm font-display font-black text-gray-900 uppercase tracking-tight whitespace-nowrap">
+              {activeGondola?.settings?.name || '---'}
+            </h2>
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5 md:gap-2">
@@ -107,7 +112,7 @@ function MainLayout({
               variant="ghost"
               size="icon"
               onClick={() => document.getElementById('excel-import-header')?.click()}
-              className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-blue-600 hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+              className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-blue-600 hover:bg-blue-50 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
               title="Import Excel"
             >
               <Upload size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
@@ -118,7 +123,7 @@ function MainLayout({
             variant="ghost"
             size="icon"
             onClick={handleExportExcel}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-green-600 hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-green-600 hover:bg-green-50 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
             title="Export Excel"
           >
             <FileSpreadsheet size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
@@ -132,7 +137,7 @@ function MainLayout({
               setIsFormOpen(true);
               setIsSidebarOpen(true);
             }}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-gray-200/80 text-black hover:bg-gray-300 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-black hover:bg-gray-100 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
             title="Add Product"
           >
             <Plus size={22} className="md:w-[24px] md:h-[24px]" strokeWidth={3} />
@@ -140,7 +145,7 @@ function MainLayout({
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden relative p-2 md:p-4 gap-2 md:gap-4">
+      <div className="flex-1 flex overflow-hidden relative p-0 md:p-1 gap-1">
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div
@@ -148,14 +153,14 @@ function MainLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
             />
           )}
         </AnimatePresence>
 
         <div className={cn(
-          "fixed md:relative inset-y-0 left-0 z-50 md:z-auto transition-transform duration-500 transform md:translate-x-0 w-[85%] max-w-[320px] md:w-80 h-full md:h-full md:shadow-none p-1 md:p-0",
-          isSidebarOpen ? "translate-x-0" : "-translate-x-[110%]"
+          "fixed md:relative inset-y-0 left-0 z-50 transition-all duration-500 transform w-[60%] md:w-80 h-full bg-white md:bg-transparent",
+          isSidebarOpen ? "translate-x-0 opacity-100" : "-translate-x-full md:w-0 opacity-0 md:pointer-events-none"
         )}>
           <Sidebar 
             products={state.products}
@@ -231,7 +236,7 @@ export default function App() {
 
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('products');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {

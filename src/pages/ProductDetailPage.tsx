@@ -23,7 +23,10 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const calendarRef = React.useRef<HTMLDivElement>(null);
 
-  const product = products.find(p => p.id === productId);
+  const productIndex = products.findIndex(p => p.id === productId);
+  const product = products[productIndex];
+  const prevProductId = productIndex > 0 ? products[productIndex - 1].id : null;
+  const nextProductId = productIndex < products.length - 1 ? products[productIndex + 1].id : null;
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -77,19 +80,45 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto p-4 max-w-lg md:max-w-4xl mx-auto w-full">
+      <main className="flex-1 overflow-auto px-4 pb-4 pt-4 md:px-12 md:pb-12 md:pt-8 max-w-lg md:max-w-6xl mx-auto w-full">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="overflow-hidden p-4 md:p-0 space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-12 md:items-start"
+          className="overflow-hidden space-y-4 md:space-y-0 md:grid md:grid-cols-12 md:gap-16 md:items-start"
         >
           {/* Image Section */}
-          <div className="aspect-square bg-gray-50 rounded-[1.5rem] flex items-center justify-center p-8 relative overflow-hidden group">
+          <div className="md:col-span-5 lg:col-span-4 aspect-square flex items-start justify-center pt-4 pb-4 px-8 relative overflow-hidden group">
+            {/* Navigation Arrows */}
+            <div className="absolute inset-0 flex items-center justify-between px-2 md:px-4 z-10 pointer-events-none">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "rounded-full w-10 h-10 md:w-12 md:h-12 bg-white/80 backdrop-blur-sm shadow-md border border-gray-100 transition-all pointer-events-auto hover:bg-white active:scale-90",
+                  !prevProductId && "opacity-0 pointer-events-none"
+                )}
+                onClick={() => prevProductId && navigate(`/product/${prevProductId}`)}
+              >
+                <ChevronLeft size={24} className="text-gray-700" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "rounded-full w-10 h-10 md:w-12 md:h-12 bg-white/80 backdrop-blur-sm shadow-md border border-gray-100 transition-all pointer-events-auto hover:bg-white active:scale-90",
+                  !nextProductId && "opacity-0 pointer-events-none"
+                )}
+                onClick={() => nextProductId && navigate(`/product/${nextProductId}`)}
+              >
+                <ChevronRight size={24} className="text-gray-700" />
+              </Button>
+            </div>
+
             {product.image ? (
               <img 
                 src={product.image} 
                 alt={product.name} 
-                className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" 
+                className="max-w-[80%] max-h-[80%] object-contain transition-transform duration-500 group-hover:scale-105" 
                 referrerPolicy="no-referrer" 
               />
             ) : (
@@ -100,49 +129,50 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
             )}
           </div>
 
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex flex-col gap-2 px-1">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Identitas Produk</span>
-                  <div className="flex flex-wrap items-center gap-3 p-4 bg-white/60 rounded-3xl">
-                    <div className="flex items-center pr-3 border-r border-gray-200">
-                      <span className="text-sm font-black text-gray-900">
+          <div className="md:col-span-7 lg:col-span-8 space-y-3 md:space-y-4">
+            <div className="flex flex-col gap-1 px-1">
+              <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider">Identitas Produk</span>
+              <div className="flex flex-wrap items-center gap-4 p-4 md:p-5 bg-white rounded-[2rem] border border-gray-100">
+                    <div className="flex items-center gap-2 pr-4 border-r border-gray-200">
+                      <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
+                        <Package size={20} />
+                      </div>
+                      <span className="text-base md:text-xl font-black text-gray-900 tracking-tight">
                         {locationInfo.shelfIdx + 1}<span className="text-gray-300 mx-0.5">-</span>{locationInfo.slotIdx + 1}
                       </span>
                     </div>
-                    <div className="flex flex-1 items-center gap-4 min-w-0">
+                    <div className="flex flex-1 items-center gap-6 min-w-0">
                       <div className="flex flex-col min-w-0">
-                        <span className="text-[8px] font-bold text-gray-400 uppercase leading-none mb-1">PLU & SKU</span>
-                        <div className="flex items-center gap-2 text-[11px] font-black text-gray-800">
+                        <span className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase leading-none mb-1.5">PLU & SKU</span>
+                        <div className="flex items-center gap-3 text-sm md:text-base font-black text-gray-800">
                           <span>{product.plu || '-'}</span>
-                          <span className="text-gray-200">/</span>
+                          <span className="text-gray-200 text-lg">/</span>
                           <span className="truncate">{product.sku || '-'}</span>
                         </div>
                       </div>
-                      <div className="ml-auto pl-3 border-l border-gray-200 flex flex-col items-end">
-                        <span className="text-[8px] font-bold text-gray-400 uppercase leading-none mb-1">RH</span>
-                        <span className="text-xs font-black text-primary">{product.rh || '0'}</span>
+                      <div className="ml-auto pl-4 border-l border-gray-200 flex flex-col items-end">
+                        <span className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase leading-none mb-1.5">RH</span>
+                        <span className="text-base md:text-xl font-black text-primary">{product.rh || '0'}</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                
-                <div className="px-1">
-                  <div className="bg-amber-50/70 rounded-2xl p-4 flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <p className="text-[9px] font-bold text-amber-600 uppercase">Target Retur</p>
-                      <p className="text-sm font-black text-amber-700">
-                        {product.expiryDate ? (() => {
-                        try {
-                          const exp = parse(product.expiryDate, 'dd/MM/yyyy', new Date());
-                          const target = new Date(exp.getTime() - (product.rh || 0) * 24 * 60 * 60 * 1000);
-                          return format(target, 'dd/MM/yy');
-                        } catch (e) {
-                          return '-';
-                        }
-                      })() : '-'}
-                    </p>
-                  </div>
+              
+              <div className="px-1">
+                <div className="bg-amber-50 border border-amber-100/50 rounded-[2rem] p-4 md:p-5 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-[10px] md:text-xs font-bold text-amber-600 uppercase">Target Retur</p>
+                    <p className="text-lg md:text-2xl font-black text-amber-700">
+                      {product.expiryDate ? (() => {
+                      try {
+                        const exp = parse(product.expiryDate, 'dd/MM/yyyy', new Date());
+                        const target = new Date(exp.getTime() - (product.rh || 0) * 24 * 60 * 60 * 1000);
+                        return format(target, 'dd/MM/yy');
+                      } catch (e) {
+                        return '-';
+                      }
+                    })() : '-'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -166,7 +196,7 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 4, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute left-0 right-0 top-full z-[120] bg-white rounded-2xl p-4 origin-top shadow-xl border border-gray-100"
+                      className="absolute left-0 right-0 top-full z-[120] bg-white rounded-2xl p-4 origin-top border border-gray-100"
                     >
                       <style>{`
                         .rdp {
@@ -206,11 +236,11 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
               <div className="pt-2">
                 <div className="flex flex-col md:flex-row md:items-stretch gap-3">
                   <div className="grid grid-cols-2 gap-3 flex-1">
-                  <div className="bg-orange-50/70 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 min-w-[100px]">
+                  <div className="bg-orange-50 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 min-w-[100px]">
                       <p className="text-[10px] font-bold text-orange-600 uppercase">Exp Date</p>
                       <p className="text-sm font-black text-orange-700">{product.expiryDate || '-'}</p>
                     </div>
-                    <div className="bg-blue-50/70 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 text-center min-w-[120px]">
+                    <div className="bg-blue-50 p-3 rounded-2xl flex flex-col items-center justify-center gap-1 text-center min-w-[120px]">
                       <p className="text-[10px] font-bold text-blue-600 uppercase">Terakhir Cek</p>
                       <p className="text-[11px] font-black text-blue-700 leading-tight">{product.lastChecked || '-'}</p>
                     </div>
@@ -235,8 +265,8 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
                 </div>
               </div>
             </div>
-          </motion.div>
-        </main>
-      </div>
+        </motion.div>
+      </main>
+    </div>
   );
 }

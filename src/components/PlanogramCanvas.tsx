@@ -26,25 +26,31 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
   const canvasRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <div className="flex-1 h-full overflow-auto relative custom-scrollbar">
-      <div className="max-w-5xl mx-auto space-y-0.5 md:space-y-2 relative z-10 p-2 md:p-4">
+    <div className="flex-1 h-full overflow-auto relative custom-scrollbar bg-white">
+      <div className="max-w-6xl mx-auto relative z-10">
         <div 
           ref={canvasRef}
-          className="p-1 md:p-2 relative overflow-hidden print:shadow-none print:border-none"
+          className="relative print:shadow-none print:border-none"
         >
-          <div className="space-y-1 md:space-y-2">
+
+          <div className="space-y-0">
             {Array.from({ length: settings.shelfCount }).map((_, si) => {
               const shelf = shelves[si] || [];
+              const isLastUsedShelf = shelves.slice(si + 1).every(s => !s || s.length === 0);
+              const isShelfEmpty = shelf.length === 0;
+              
+              // Only show empty shelves if they are not trailing OR if we are in placement mode
+              if (!selectedProductId && isShelfEmpty && isLastUsedShelf && si > 0) return null;
               
               return (
                 <div 
                   key={si} 
-                  className="w-full relative overflow-x-auto pb-1 md:pb-2 custom-scrollbar group"
+                  className="w-full relative overflow-x-auto custom-scrollbar group"
                   onClick={() => selectedProductId && onPlaceProduct(si)}
                 >
                   <div className={cn(
-                    "flex items-end gap-1 md:gap-2 min-h-[160px] md:min-h-[200px] px-2 md:px-4 pt-2 w-max transition-all rounded-xl",
-                    selectedProductId && "bg-gray-100/50 cursor-pointer hover:bg-gray-200/50"
+                    "flex items-end gap-1 md:gap-2 min-h-[100px] md:min-h-[130px] px-2 md:px-4 w-max transition-all",
+                    selectedProductId && "bg-gray-100/50 cursor-pointer hover:bg-gray-100"
                   )}>
                     <AnimatePresence mode="popLayout">
                         {shelf.map((p, pi) => (
@@ -61,14 +67,14 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 navigate(`/product/${p.id}`);
                               }}
                               className={cn(
-                                "rounded-xl flex flex-col items-center justify-center p-2 md:p-3 text-center transition-all overflow-hidden relative",
+                                "rounded-xl flex flex-col items-center justify-center p-0.5 md:p-1 text-center transition-all overflow-hidden relative",
                                 p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16",
-                                !p.image && "bg-primary/20",
+                                "h-[100px] md:h-[130px]",
+                                !p.image && "bg-primary",
                                 selectedProductId === p.id && "bg-gray-300"
                               )}
                               style={{ 
-                                height: `${window.innerWidth < 768 ? 140 + (settings.shelfCount - si) * 5 : 180 + (settings.shelfCount - si) * 8}px`,
-                                backgroundImage: p.image ? 'none' : 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, transparent 100%)'
+                                backgroundImage: p.image ? 'none' : 'none'
                               }}
                             >
                               {p.image ? (
@@ -79,10 +85,10 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 </span>
                               )}
 
-                              <div className="absolute inset-0 bg-black/0 group-hover/product:bg-black/10 transition-colors" />
+                              <div className="absolute inset-0 group-hover/product:bg-gray-100 transition-colors" />
                               
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/product:opacity-100 transition-opacity pointer-events-none">
-                                <div className="bg-white/90 backdrop-blur-sm p-1.5 rounded-lg">
+                                <div className="bg-white p-1.5 rounded-lg">
                                   <Maximize2 size={14} className="text-primary" />
                                 </div>
                               </div>
