@@ -239,38 +239,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </Button>
                 </div>
 
-                <div className="space-y-1">
-                  {filteredGondolas.map(g => (
-                    <div 
-                      key={g.id}
-                      onClick={() => onSelectGondola(g.id)}
-                      className={cn(
-                        "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
-                        activeGondolaId === g.id 
-                          ? "bg-gray-200 text-gray-900 shadow-none border-none" 
-                          : "hover:bg-gray-100 text-gray-600 bg-white border border-gray-100"
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-1 relative z-10">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <div className={cn(
-                            "w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-all duration-300",
-                            activeGondolaId === g.id 
-                              ? "bg-gray-300 text-gray-900" 
-                              : "bg-gray-50 text-gray-400"
-                          )}>
-                            <LayoutGrid size={12} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
+                <div className="grid grid-cols-2 gap-2 px-1">
+                  {filteredGondolas.map(g => {
+                    const allProducts = g.shelves.flat();
+                    const hasProducts = allProducts.length > 0;
+                    const isCompleted = hasProducts && allProducts.every(p => p.soChecked);
+
+                    return (
+                      <div 
+                        key={g.id}
+                        onClick={() => onSelectGondola(g.id)}
+                        className={cn(
+                          "aspect-square p-3 cursor-pointer transition-all rounded-2xl relative overflow-hidden flex flex-col items-center justify-center gap-2 group",
+                          activeGondolaId === g.id 
+                            ? "bg-gray-100/80 text-gray-900 shadow-none z-10" 
+                            : "hover:bg-gray-50 text-gray-600 bg-white border border-gray-100 hover:border-gray-200"
+                        )}
+                      >
+                        {isCompleted && (
+                          <div className="absolute top-2 right-2 w-4 h-4 bg-primary text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
+                            <Check size={10} strokeWidth={4} />
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-[10px] font-bold tracking-tight truncate text-gray-900">{g.settings.name}</p>
-                          </div>
+                        )}
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                          activeGondolaId === g.id 
+                            ? "bg-white text-gray-900 shadow-sm" 
+                            : "bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-primary/60"
+                        )}>
+                          <LayoutGrid size={20} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                         </div>
-                        
-                        <div className="flex items-center gap-1">
+                        <div className="text-center w-full">
+                          <p className={cn(
+                            "text-[10px] font-black tracking-tight uppercase truncate",
+                            activeGondolaId === g.id ? "text-gray-900" : "text-gray-600"
+                          )}>
+                            {g.settings.name}
+                          </p>
+                          <p className={cn(
+                            "text-[8px] font-bold opacity-50",
+                            activeGondolaId === g.id ? "text-gray-500" : "text-gray-400"
+                          )}>
+                            {allProducts.length || 0} Terisi
+                          </p>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>

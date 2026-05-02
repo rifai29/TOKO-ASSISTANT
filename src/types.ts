@@ -11,6 +11,9 @@ export interface Product {
   gondolaId?: string; // Added to track which gondola it belongs to
   expiryDate?: string;
   lastChecked?: string;
+  soChecked?: string;
+  tidyChecked?: boolean;
+  priceChecked?: boolean;
 }
 
 export interface GondolaSettings {
