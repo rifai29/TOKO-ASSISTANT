@@ -466,21 +466,25 @@ export default function App() {
           if (!worksheet) return;
           const json = XLSX.utils.sheet_to_json(worksheet) as any[];
           if (json.length === 0) return;
-          const rakName = sheetName;
-          if (!gondolaMap[rakName]) {
-            gondolaMap[rakName] = {
-              id: Math.random().toString(36).substr(2, 9) + sIdx,
-              settings: { ...INITIAL_SETTINGS, name: rakName },
-              shelves: Array.from({ length: 12 }, () => [])
-            };
-          }
+          
           json.forEach((item, index) => {
+            // Priority: Try to find a "Rak" column first, otherwise fallback to sheet name
+            const itemRakName = String(getVal(item, ['Rak', 'Gondola', 'POG', 'Lokasi', 'No Rak']) || sheetName);
+            
+            if (!gondolaMap[itemRakName]) {
+              gondolaMap[itemRakName] = {
+                id: Math.random().toString(36).substr(2, 9) + sIdx + itemRakName,
+                settings: { ...INITIAL_SETTINGS, name: itemRakName },
+                shelves: Array.from({ length: 12 }, () => [])
+              };
+            }
+
             const productName = getVal(item, ['Nama Produk', 'Product Name', 'Nama', 'Item', 'Produk']);
             const sku = getVal(item, ['SKU', 'Barcode', 'EAN', 'UPC']);
             if (!productName && !sku) return;
 
             const category = String(getVal(item, ['Kategori', 'Category', 'Dept', 'Departemen']) || INITIAL_SETTINGS.category);
-            gondolaMap[rakName].settings.category = category;
+            gondolaMap[itemRakName].settings.category = category;
             
             // Try to find image URL with more variations
             let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar', 'Image', 'Photo', 'Link', 'URL', 'Link Gambar', 'ImageUrl']);
@@ -490,7 +494,7 @@ export default function App() {
             const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi', 'No Urut'])) || undefined;
             
             const product: Product = {
-              id: Math.random().toString(36).substr(2, 9) + index + sIdx,
+              id: Math.random().toString(36).substr(2, 9) + index + sIdx + itemRakName,
               name: String(productName || 'Unnamed Product'),
               sku: String(sku || ''),
               plu: String(getVal(item, ['PLU', 'ID']) || ''),
@@ -499,11 +503,11 @@ export default function App() {
               image: imageUrl ? String(imageUrl).trim() : undefined,
               shelf: shelfNum,
               slot: slotNum,
-              gondolaId: gondolaMap[rakName].id
+              gondolaId: gondolaMap[itemRakName].id
             };
             newProducts.push(product);
             if (product.shelf && product.shelf > 0 && product.shelf <= 12) {
-              gondolaMap[rakName].shelves[product.shelf - 1].push({ ...product });
+              gondolaMap[itemRakName].shelves[product.shelf - 1].push({ ...product });
             }
           });
         });
