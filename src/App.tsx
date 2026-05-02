@@ -32,9 +32,10 @@ const INITIAL_PRODUCTS: Product[] = [
     facing: 1, 
     rh: 0,
     shelf: 1,
-    slot: 1
+    slot: 1,
+    image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2021/10/12/5c8e1a1b-3b3b-4b1b-9b1b-9b1b9b1b9b1b.jpg'
   },
-  { id: '1', name: 'Aqua 600ml', sku: 'AQU001', plu: 'Aqua', facing: 2, rh: 30 },
+  { id: '1', name: 'Aqua 600ml', sku: 'AQU001', plu: 'Aqua', facing: 2, rh: 30, image: 'https://www.sehataqua.co.id/wp-content/uploads/2023/04/p-aqua-600.png' },
   { 
     id: 'red-bull', 
     name: 'Red bull minuman energi kaleng 250ml', 
@@ -43,12 +44,13 @@ const INITIAL_PRODUCTS: Product[] = [
     facing: 1, 
     rh: 0,
     shelf: 1,
-    slot: 2
+    slot: 2,
+    image: 'https://www.redbull.com/energy-drink-res-250ml-can.png'
   },
-  { id: '2', name: 'Teh Botol Sosro', sku: 'TBS002', plu: 'Sosro', facing: 2, rh: 30 },
-  { id: '3', name: 'Pocari Sweat', sku: 'POC003', plu: 'Otsuka', facing: 1, rh: 30 },
-  { id: '4', name: 'Indomilk UHT', sku: 'IND004', plu: 'Indomilk', facing: 2, rh: 30 },
-  { id: '5', name: 'Sprite 500ml', sku: 'SPR005', plu: 'Coca-Cola', facing: 1, rh: 30 },
+  { id: '2', name: 'Teh Botol Sosro', sku: 'TBS002', plu: 'Sosro', facing: 2, rh: 30, image: 'https://www.sosro.com/images/products/tehbotolsosro-pet.png' },
+  { id: '3', name: 'Pocari Sweat', sku: 'POC003', plu: 'Otsuka', facing: 1, rh: 30, image: 'https://www.pocarisweat.id/images/products/pocari-sweat-500ml.png' },
+  { id: '4', name: 'Indomilk UHT', sku: 'IND004', plu: 'Indomilk', facing: 2, rh: 30, image: 'https://www.indomilk.com/images/products/indomilk-uht.png' },
+  { id: '5', name: 'Sprite 500ml', sku: 'SPR005', plu: 'Coca-Cola', facing: 1, rh: 30, image: 'https://www.sprite.co.id/images/products/sprite-500ml.png' },
 ];
 
 function MainLayout({ 
@@ -203,6 +205,25 @@ function MainLayout({
     </div>
   );
 }
+
+const getDirectDriveLink = (url: string) => {
+  if (!url) return url;
+  const drivePatterns = [
+    /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/uc\?id=([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/thumbnail\?id=([a-zA-Z0-9_-]+)/
+  ];
+
+  for (const pattern of drivePatterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      // Use the thumbnail endpoint with a large size for better compatibility and fallback
+      return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+    }
+  }
+  return url;
+};
 
 export default function App() {
   const [state, setState] = useState<PlanogramState>(() => {
@@ -433,7 +454,11 @@ export default function App() {
         const newProducts: Product[] = [];
         const gondolaMap: Record<string, Gondola> = {};
         const getVal = (obj: any, keys: string[]) => {
-          const foundKey = Object.keys(obj).find(k => keys.some(target => k.toLowerCase().trim() === target.toLowerCase()));
+          const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const normalizedTargetKeys = keys.map(normalize);
+          const foundKey = Object.keys(obj).find(k => 
+            normalizedTargetKeys.includes(normalize(k))
+          );
           return foundKey ? obj[foundKey] : undefined;
         };
         workbook.SheetNames.forEach((sheetName, sIdx) => {
@@ -450,21 +475,27 @@ export default function App() {
             };
           }
           json.forEach((item, index) => {
-            const productName = getVal(item, ['Nama Produk', 'Product Name', 'Nama']);
-            const sku = getVal(item, ['SKU', 'Barcode']);
+            const productName = getVal(item, ['Nama Produk', 'Product Name', 'Nama', 'Item', 'Produk']);
+            const sku = getVal(item, ['SKU', 'Barcode', 'EAN', 'UPC']);
             if (!productName && !sku) return;
-            const category = String(getVal(item, ['Kategori', 'Category']) || INITIAL_SETTINGS.category);
+
+            const category = String(getVal(item, ['Kategori', 'Category', 'Dept', 'Departemen']) || INITIAL_SETTINGS.category);
             gondolaMap[rakName].settings.category = category;
-            let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar']);
-            const shelfNum = Number(getVal(item, ['Selving', 'Shelf', 'Rak Nomor'])) || undefined;
-            const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi'])) || undefined;
+            
+            // Try to find image URL with more variations
+            let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar', 'Image', 'Photo', 'Link', 'URL', 'Link Gambar', 'ImageUrl']);
+            if (imageUrl) imageUrl = getDirectDriveLink(String(imageUrl).trim());
+            
+            const shelfNum = Number(getVal(item, ['Selving', 'Shelf', 'Rak Nomor', 'No Rak'])) || undefined;
+            const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi', 'No Urut'])) || undefined;
+            
             const product: Product = {
               id: Math.random().toString(36).substr(2, 9) + index + sIdx,
               name: String(productName || 'Unnamed Product'),
               sku: String(sku || ''),
-              plu: String(getVal(item, ['PLU']) || ''),
-              facing: Number(getVal(item, ['Facing', 'Lebar'])) || 1,
-              rh: Number(getVal(item, ['RH', 'Retur'])) || 0,
+              plu: String(getVal(item, ['PLU', 'ID']) || ''),
+              facing: Number(getVal(item, ['Facing', 'Lebar', 'Display'])) || 1,
+              rh: Number(getVal(item, ['RH', 'Retur', 'Capacity'])) || 0,
               image: imageUrl ? String(imageUrl).trim() : undefined,
               shelf: shelfNum,
               slot: slotNum,

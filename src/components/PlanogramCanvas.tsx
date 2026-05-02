@@ -78,7 +78,29 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                               }}
                             >
                               {p.image ? (
-                                <img src={p.image} alt={p.name} className="absolute inset-0 w-full h-full object-contain p-1" referrerPolicy="no-referrer" />
+                                <img 
+                                  src={p.image} 
+                                  alt={p.name} 
+                                  className="absolute inset-0 w-full h-full object-contain p-1" 
+                                  referrerPolicy="no-referrer"
+                                  onError={(e) => {
+                                    const img = e.target as HTMLImageElement;
+                                    const parent = img.parentElement;
+                                    if (!parent) return;
+                                    
+                                    img.src = '';
+                                    parent.classList.add('bg-primary');
+                                    
+                                    // Only add text if it's not already there
+                                    if (!parent.querySelector('.fallback-text')) {
+                                      const span = document.createElement('span');
+                                      span.className = "fallback-text text-[10px] font-bold text-primary leading-tight relative z-10";
+                                      span.innerText = p.name;
+                                      parent.appendChild(span);
+                                    }
+                                    img.classList.add('hidden');
+                                  }}
+                                />
                               ) : (
                                 <span className="text-[10px] font-bold text-primary leading-tight relative z-10">
                                   {p.name}
