@@ -454,12 +454,14 @@ export default function App() {
         const newProducts: Product[] = [];
         const gondolaMap: Record<string, Gondola> = {};
         const getVal = (obj: any, keys: string[]) => {
-          const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const normalizedTargetKeys = keys.map(normalize);
-          const foundKey = Object.keys(obj).find(k => 
-            normalizedTargetKeys.includes(normalize(k))
-          );
-          return foundKey ? obj[foundKey] : undefined;
+          const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+          const objKeys = Object.keys(obj);
+          for (const target of keys) {
+            const normalizedTarget = normalize(target);
+            const foundKey = objKeys.find(k => normalize(k) === normalizedTarget);
+            if (foundKey) return obj[foundKey];
+          }
+          return undefined;
         };
         workbook.SheetNames.forEach((sheetName, sIdx) => {
           const worksheet = workbook.Sheets[sheetName];
@@ -468,38 +470,36 @@ export default function App() {
           if (json.length === 0) return;
           
           json.forEach((item, index) => {
-            // Priority: Try to find a "Rak" column first, otherwise fallback to sheet name
-            const itemRakName = String(getVal(item, ['Rak', 'Gondola', 'POG', 'Lokasi', 'No Rak']) || sheetName);
+            const itemRakName = String(getVal(item, ['Rak', 'Gondola', 'POG', 'Lokasi', 'No Rak', 'Area']) || sheetName).trim();
             
             if (!gondolaMap[itemRakName]) {
               gondolaMap[itemRakName] = {
-                id: Math.random().toString(36).substr(2, 9) + sIdx + itemRakName,
+                id: `import-${sIdx}-${itemRakName.replace(/\s+/g, '-')}`,
                 settings: { ...INITIAL_SETTINGS, name: itemRakName },
                 shelves: Array.from({ length: 12 }, () => [])
               };
             }
 
-            const productName = getVal(item, ['Nama Produk', 'Product Name', 'Nama', 'Item', 'Produk']);
-            const sku = getVal(item, ['SKU', 'Barcode', 'EAN', 'UPC']);
+            const productName = getVal(item, ['Nama Produk', 'Product Name', 'Nama', 'Item', 'Produk', 'Description', 'Desc']);
+            const sku = getVal(item, ['SKU', 'Barcode', 'EAN', 'UPC', 'PLU', 'ID']);
             if (!productName && !sku) return;
 
-            const category = String(getVal(item, ['Kategori', 'Category', 'Dept', 'Departemen']) || INITIAL_SETTINGS.category);
+            const category = String(getVal(item, ['Kategori', 'Category', 'Dept', 'Departemen', 'Class']) || INITIAL_SETTINGS.category);
             gondolaMap[itemRakName].settings.category = category;
             
-            // Try to find image URL with more variations
-            let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar', 'Image', 'Photo', 'Link', 'URL', 'Link Gambar', 'ImageUrl']);
+            let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar', 'Image', 'Photo', 'Link', 'URL', 'Link Gambar', 'ImageUrl', 'Pict']);
             if (imageUrl) imageUrl = getDirectDriveLink(String(imageUrl).trim());
             
-            const shelfNum = Number(getVal(item, ['Selving', 'Shelf', 'Rak Nomor', 'No Rak'])) || undefined;
-            const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi', 'No Urut'])) || undefined;
+            const shelfNum = Number(getVal(item, ['Selving', 'Shelf', 'Rak Nomor', 'No Rak', 'Shelving', 'Tier'])) || undefined;
+            const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi', 'No Urut', 'Seq', 'Urutan'])) || undefined;
             
             const product: Product = {
-              id: Math.random().toString(36).substr(2, 9) + index + sIdx + itemRakName,
-              name: String(productName || 'Unnamed Product'),
-              sku: String(sku || ''),
-              plu: String(getVal(item, ['PLU', 'ID']) || ''),
-              facing: Number(getVal(item, ['Facing', 'Lebar', 'Display'])) || 1,
-              rh: Number(getVal(item, ['RH', 'Retur', 'Capacity'])) || 0,
+              id: `p-${itemRakName}-${index}-${sku || Math.random()}`,
+              name: String(productName || 'Tanpa Nama').trim(),
+              sku: String(sku || '').trim(),
+              plu: String(getVal(item, ['PLU', 'ID', 'Code']) || '').trim(),
+              facing: Number(getVal(item, ['Facing', 'Lebar', 'Display', 'Fcg'])) || 1,
+              rh: Number(getVal(item, ['RH', 'Retur', 'Capacity', 'Qty'])) || 0,
               image: imageUrl ? String(imageUrl).trim() : undefined,
               shelf: shelfNum,
               slot: slotNum,
@@ -511,7 +511,7 @@ export default function App() {
             }
           });
         });
-        const newGondolas = Object.values(gondolaMap).map(g => {
+        const importedGondolas = Object.values(gondolaMap).map(g => {
           let maxShelf = 4;
           g.shelves.forEach((s, idx) => { if (s.length > 0) maxShelf = Math.max(maxShelf, idx + 1); });
           return {
@@ -519,12 +519,21 @@ export default function App() {
             settings: { ...g.settings, shelfCount: maxShelf },
             shelves: g.shelves.slice(0, maxShelf).map(s => s.sort((a: any, b: any) => (a.slot || 999) - (b.slot || 999)))
           };
-        });
-        if (newGondolas.length === 0) return;
-        setState({ products: newProducts, gondolas: newGondolas, activeGondolaId: newGondolas[0].id });
-        setActiveTab('rak');
-      } catch (error) { console.error("Import error:", error); }
+        }) as Gondola[];
+
+        if (importedGondolas.length > 0) {
+          setState({
+            products: newProducts,
+            gondolas: importedGondolas,
+            activeGondolaId: importedGondolas[0].id
+          });
+          setActiveTab('rak');
+        }
+      } catch (error) {
+        console.error("Import error:", error);
+      }
     };
+    reader.onerror = () => console.error("FileReader error");
     reader.readAsArrayBuffer(file);
   };
 
