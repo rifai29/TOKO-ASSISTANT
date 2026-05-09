@@ -239,7 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 px-1">
+                <div className="grid grid-cols-3 gap-1.5 px-1">
                   {filteredGondolas.map(g => {
                     const allProducts = g.shelves.flat();
                     const hasProducts = allProducts.length > 0;
@@ -250,37 +250,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         key={g.id}
                         onClick={() => onSelectGondola(g.id)}
                         className={cn(
-                          "aspect-square p-3 cursor-pointer transition-all rounded-2xl relative overflow-hidden flex flex-col items-center justify-center gap-2 group",
+                          "aspect-square p-2 cursor-pointer transition-all rounded-2xl relative overflow-hidden flex flex-col items-center justify-center gap-1 group",
                           activeGondolaId === g.id 
                             ? "bg-gray-100/80 text-gray-900 shadow-none z-10" 
                             : "hover:bg-gray-50 text-gray-600 bg-white border border-gray-100 hover:border-gray-200"
                         )}
                       >
                         {isCompleted && (
-                          <div className="absolute top-2 right-2 w-4 h-4 bg-primary text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
-                            <Check size={10} strokeWidth={4} />
+                          <div className="absolute top-1 right-1 w-3.5 h-3.5 bg-primary text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
+                            <Check size={8} strokeWidth={4} />
                           </div>
                         )}
                         <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300",
+                          "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
                           activeGondolaId === g.id 
                             ? "bg-white text-gray-900 shadow-sm" 
                             : "bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-primary/60"
                         )}>
-                          <LayoutGrid size={20} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
+                          <LayoutGrid size={16} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                         </div>
-                        <div className="text-center w-full">
+                        <div className="text-center w-full px-0.5">
                           <p className={cn(
-                            "text-[10px] font-black tracking-tight uppercase truncate",
+                            "text-[8px] md:text-[9px] font-black tracking-tighter uppercase truncate",
                             activeGondolaId === g.id ? "text-gray-900" : "text-gray-600"
                           )}>
                             {g.settings.name}
                           </p>
                           <p className={cn(
-                            "text-[8px] font-bold opacity-50",
+                            "text-[7px] font-bold opacity-50",
                             activeGondolaId === g.id ? "text-gray-500" : "text-gray-400"
                           )}>
-                            {allProducts.length || 0} Terisi
+                            {allProducts.length || 0}
                           </p>
                         </div>
                       </div>
