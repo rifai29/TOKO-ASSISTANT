@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import * as XLSX from 'xlsx';
 import ProductDetailPage from './pages/ProductDetailPage';
+import EditProductPage from './pages/EditProductPage';
 
 const INITIAL_SETTINGS: GondolaSettings = {
   name: "PLANOGRAM AA4",
@@ -76,6 +77,7 @@ function MainLayout({
   isFormOpen,
   setIsFormOpen
 }: any) {
+  const navigate = useNavigate();
   const activeGondola = state.gondolas.find((g: any) => g.id === state.activeGondolaId) || state.gondolas[0];
 
   return (
@@ -134,11 +136,7 @@ function MainLayout({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              setActiveTab('products');
-              setIsFormOpen(true);
-              setIsSidebarOpen(true);
-            }}
+            onClick={() => navigate('/add-product')}
             className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-black hover:bg-gray-100 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
             title="Add Product"
           >
@@ -575,6 +573,31 @@ export default function App() {
               products={state.products} 
               onUpdateProduct={handleUpdateProduct}
               gondolas={state.gondolas}
+            />
+          } 
+        />
+        <Route 
+          path="/edit-product/:productId" 
+          element={
+            <EditProductPage 
+              products={state.products} 
+              gondolas={state.gondolas}
+              onUpdateProduct={handleUpdateProduct}
+              onRemoveProduct={handleRemoveProduct}
+              onAddProduct={handleAddProduct}
+            />
+          } 
+        />
+        <Route 
+          path="/add-product" 
+          element={
+            <EditProductPage 
+              products={state.products} 
+              gondolas={state.gondolas}
+              onUpdateProduct={handleUpdateProduct}
+              onRemoveProduct={handleRemoveProduct}
+              onAddProduct={handleAddProduct}
+              isNew
             />
           } 
         />
