@@ -36,6 +36,18 @@ const INITIAL_PRODUCTS: Product[] = [
     slot: 1,
     image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2021/10/12/5c8e1a1b-3b3b-4b1b-9b1b-9b1b9b1b9b1b.jpg'
   },
+  { 
+    id: 'enfagrow', 
+    name: 'ENFAGROW A+ GENTL CAN 800G (OL)', 
+    sku: '871204503236', 
+    plu: '437014', 
+    facing: 4, 
+    rh: 0,
+    shelf: 1,
+    slot: 1,
+    expiryDate: 'CAN MILK',
+    image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2022/1/19/33b7e477-7d88-4673-9844-307983637209.jpg?v=3'
+  },
   { id: '1', name: 'Aqua 600ml', sku: 'AQU001', plu: 'Aqua', facing: 2, rh: 30, image: 'https://www.sehataqua.co.id/wp-content/uploads/2023/04/p-aqua-600.png' },
   { 
     id: 'red-bull', 
@@ -223,6 +235,16 @@ const getDirectDriveLink = (url: string) => {
   return url;
 };
 
+const getDirectImgbbLink = (url: string) => {
+  if (!url) return url;
+  const imgbbMatch = url.match(/ibb\.co(?:\.com)?\/([a-zA-Z0-9]+)/);
+  if (imgbbMatch && imgbbMatch[1]) {
+    // Attempt to return a direct link if possible, or at least common pattern
+    return `https://i.ibb.co/${imgbbMatch[1]}/image.png`;
+  }
+  return url;
+};
+
 export default function App() {
   const [state, setState] = useState<PlanogramState>(() => {
     const saved = localStorage.getItem('planogram_state_v9');
@@ -234,21 +256,53 @@ export default function App() {
       }
     }
     
-    const initialGondola: Gondola = {
-      id: 'g1',
-      settings: INITIAL_SETTINGS,
-      shelves: [
-        [INITIAL_PRODUCTS[0], INITIAL_PRODUCTS[2]],
-        [],
-        [],
-        []
-      ],
-      lastUpdated: new Date().toLocaleString('id-ID')
-    };
+    const initialGondolas: Gondola[] = [
+      {
+        id: 'g1',
+        settings: INITIAL_SETTINGS,
+        shelves: [
+          [INITIAL_PRODUCTS[0], INITIAL_PRODUCTS[2]],
+          [],
+          [],
+          []
+        ],
+        lastUpdated: new Date().toLocaleString('id-ID')
+      },
+      {
+        id: 'hb1',
+        settings: { ...INITIAL_SETTINGS, name: "HB1", shelfCount: 5 },
+        shelves: Array.from({ length: 5 }, () => []),
+        lastUpdated: new Date().toLocaleString('id-ID')
+      },
+      {
+        id: 'hb1-limid',
+        settings: { ...INITIAL_SETTINGS, name: "HB 1(LIMID)", shelfCount: 5 },
+        shelves: [
+          [{ 
+            id: 'enfagrow-limid', 
+            name: 'ENFAGROW A+ GENTL CAN 800G (OL)', 
+            sku: '871204503236', 
+            plu: '437014', 
+            facing: 4, 
+            rh: 0, 
+            shelf: 1, 
+            slot: 1, 
+            expiryDate: 'CAN MILK',
+            image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2022/1/19/33b7e477-7d88-4673-9844-307983637209.jpg?v=3',
+            gondolaId: 'hb1-limid' 
+          }],
+          [],
+          [],
+          [],
+          []
+        ],
+        lastUpdated: new Date().toLocaleString('id-ID')
+      }
+    ];
 
     return {
       products: INITIAL_PRODUCTS,
-      gondolas: [initialGondola],
+      gondolas: initialGondolas,
       activeGondolaId: 'g1'
     };
   });
@@ -261,6 +315,140 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('planogram_state_v9', JSON.stringify(state));
   }, [state]);
+
+  // Migration: Ensure presets exist for the user
+  useEffect(() => {
+    let modified = false;
+    let newGondolas = [...state.gondolas];
+    let newProducts = [...state.products];
+
+    const enfagrowBase: Product = { 
+      id: 'enfagrow', 
+      name: 'ENFAGROW A+ GENTL CAN 800G (OL)', 
+      sku: '871204503236', 
+      plu: '437014', 
+      facing: 4, 
+      rh: 0,
+      shelf: 1,
+      slot: 1,
+      expiryDate: 'CAN MILK',
+      image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2022/1/19/33b7e477-7d88-4673-9844-307983637209.jpg?v=3'
+    };
+
+    const isLimidName = (name: string) => {
+      const n = (name || "").toUpperCase().replace(/\s/g, "");
+      return n === "HB1LIMID" || n === "HB1(LIMID)" || n.includes("LIMID");
+    };
+
+    let targetActiveId = state.activeGondolaId;
+
+    // Migration: Ensure HB1 LIMID exists for the user
+    const hasLimid = newGondolas.some((g) => isLimidName(g.settings?.name || ""));
+    let activeLimidId: string | null = null;
+
+    if (!hasLimid) {
+      const id = "hb1-limid-preset";
+      const hb1Limid: Gondola = {
+        id,
+        settings: { ...INITIAL_SETTINGS, name: "HB 1(LIMID)", shelfCount: 5 },
+        shelves: Array.from({ length: 5 }, () => []),
+        lastUpdated: new Date().toLocaleString("id-ID"),
+      };
+      newGondolas.push(hb1Limid);
+      targetActiveId = id;
+      activeLimidId = id;
+      modified = true;
+    } else {
+      // Find the Limid ID for catalog check
+      const limidG = newGondolas.find(g => isLimidName(g.settings?.name || ""));
+      if (limidG) activeLimidId = limidG.id;
+
+      // Ensure Enfagrow is at Shelf 1, Slot 1 in HB 1(LIMID) as requested ("TAMBAHKAN... DI SELVING 1 BARIS 1")
+      newGondolas = newGondolas.map((g) => {
+        if (isLimidName(g.settings?.name || "")) {
+          const newShelves = [...g.shelves];
+          if (newShelves.length > 0) {
+            const sharedId = "enfagrow-limid-v1";
+            const firstShelf = newShelves[0];
+            const hasCorrectProductAtPos1 = firstShelf.length > 0 && 
+                                           firstShelf[0].sku === enfagrowBase.sku && 
+                                           firstShelf[0].id === sharedId &&
+                                           firstShelf[0].image === enfagrowBase.image;
+            
+            if (!hasCorrectProductAtPos1) {
+              // Remove any duplicates first
+              const cleanedShelves = newShelves.map(shelf => shelf.filter(p => p.sku !== enfagrowBase.sku));
+              // Prepend to shelf 1
+              cleanedShelves[0] = [
+                {
+                  ...enfagrowBase,
+                  id: sharedId,
+                  gondolaId: g.id,
+                },
+                ...cleanedShelves[0]
+              ];
+              modified = true;
+              return {
+                ...g,
+                shelves: cleanedShelves,
+                lastUpdated: new Date().toLocaleString("id-ID"),
+              };
+            }
+          }
+        }
+        return g;
+      });
+    }
+
+    // Ensure all existing instances of Enfagrow have the correct image (Global fix for broken images)
+    const currentEnfagrowImage = enfagrowBase.image;
+    const updateEnfagrowImage = (p: Product) => {
+      if (p.sku === enfagrowBase.sku && p.image !== currentEnfagrowImage) {
+        modified = true;
+        return { ...p, image: currentEnfagrowImage };
+      }
+      return p;
+    };
+
+    newProducts = newProducts.map(updateEnfagrowImage);
+    newGondolas = newGondolas.map(g => ({
+      ...g,
+      shelves: g.shelves.map(shelf => shelf.map(updateEnfagrowImage))
+    }));
+
+    // Ensure Enfagrow is in the catalog for specifically HB1 LIMID
+    // Also remove duplicates to satisfy user ("KOK ADA 2 1 AJA PRODUKNYA")
+    if (activeLimidId) {
+      const sharedId = "enfagrow-limid-v1";
+      const skuToMatch = enfagrowBase.sku;
+      
+      // Filter out any other Enfagrow products that might be causing duplicates
+      const filtered = newProducts.filter(p => p.id === sharedId || p.sku !== skuToMatch);
+      
+      if (filtered.length !== newProducts.length) {
+        newProducts = filtered;
+        modified = true;
+      }
+
+      if (!newProducts.some(p => p.id === sharedId)) {
+        newProducts.push({
+          ...enfagrowBase,
+          id: sharedId,
+          gondolaId: activeLimidId
+        });
+        modified = true;
+      }
+    }
+
+    if (modified || targetActiveId !== state.activeGondolaId) {
+      setState(prev => ({
+        ...prev,
+        products: newProducts,
+        gondolas: newGondolas,
+        activeGondolaId: targetActiveId
+      }));
+    }
+  }, []);
 
   const handleAddProduct = (p: Omit<Product, 'id'>) => {
     const product: Product = {
@@ -486,7 +674,10 @@ export default function App() {
             gondolaMap[itemRakName].settings.category = category;
             
             let imageUrl = getVal(item, ['Image URL', 'Foto', 'Gambar', 'Image', 'Photo', 'Link', 'URL', 'Link Gambar', 'ImageUrl', 'Pict']);
-            if (imageUrl) imageUrl = getDirectDriveLink(String(imageUrl).trim());
+            if (imageUrl) {
+              imageUrl = getDirectDriveLink(String(imageUrl).trim());
+              imageUrl = getDirectImgbbLink(String(imageUrl).trim());
+            }
             
             const shelfNum = Number(getVal(item, ['Selving', 'Shelf', 'Rak Nomor', 'No Rak', 'Shelving', 'Tier'])) || undefined;
             const slotNum = Number(getVal(item, ['Baris', 'Slot', 'Posisi', 'No Urut', 'Seq', 'Urutan'])) || undefined;

@@ -21,6 +21,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
   settings,
   selectedProductId,
   onPlaceProduct,
+  onRemoveFromShelf,
 }) => {
   const navigate = useNavigate();
   const canvasRef = React.useRef<HTMLDivElement>(null);
@@ -67,15 +68,12 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 navigate(`/product/${p.id}`);
                               }}
                               className={cn(
-                                "rounded-xl flex flex-col items-center justify-center p-0.5 md:p-1 text-center transition-all overflow-hidden relative",
+                                "rounded-xl flex flex-col items-center justify-center p-0.5 md:p-1 text-center transition-all overflow-hidden relative shadow-sm border border-gray-100 bg-white",
                                 p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16",
                                 "h-[100px] md:h-[130px]",
                                 !p.image && "bg-primary",
-                                selectedProductId === p.id && "bg-gray-300"
+                                selectedProductId === p.id && "ring-2 ring-blue-500"
                               )}
-                              style={{ 
-                                backgroundImage: p.image ? 'none' : 'none'
-                              }}
                             >
                               {p.image ? (
                                 <img 
@@ -91,10 +89,9 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                     img.src = '';
                                     parent.classList.add('bg-primary');
                                     
-                                    // Only add text if it's not already there
                                     if (!parent.querySelector('.fallback-text')) {
                                       const span = document.createElement('span');
-                                      span.className = "fallback-text text-[10px] font-bold text-primary leading-tight relative z-10";
+                                      span.className = "fallback-text text-[10px] font-bold text-white px-1 leading-tight relative z-10 break-words";
                                       span.innerText = p.name;
                                       parent.appendChild(span);
                                     }
@@ -102,16 +99,16 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                   }}
                                 />
                               ) : (
-                                <span className="text-[10px] font-bold text-primary leading-tight relative z-10">
+                                <span className="text-[10px] font-bold text-white px-1 leading-tight relative z-10 break-words">
                                   {p.name}
                                 </span>
                               )}
 
-                              <div className="absolute inset-0 group-hover/product:bg-gray-100 transition-colors" />
+                              <div className="absolute inset-0 group-hover/product:bg-black/5 transition-colors" />
                               
-                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/product:opacity-100 transition-opacity pointer-events-none">
-                                <div className="bg-white p-1.5 rounded-lg">
-                                  <Maximize2 size={14} className="text-primary" />
+                              <div className="absolute inset-x-0 bottom-0 p-1 flex justify-center opacity-0 group-hover/product:opacity-100 transition-opacity pointer-events-none">
+                                <div className="bg-white/90 backdrop-blur shadow-sm p-1 rounded-lg">
+                                  <Maximize2 size={12} className="text-gray-600" />
                                 </div>
                               </div>
                             </div>

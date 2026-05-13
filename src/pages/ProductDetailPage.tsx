@@ -88,298 +88,220 @@ export default function ProductDetailPage({ products, onUpdateProduct, gondolas 
   return (
     <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans antialiased">
       {/* Header */}
-      <header className="bg-white sticky top-0 z-50 px-4 h-14 flex items-center gap-4">
+      <header className="bg-white sticky top-0 z-50 px-4 h-14 flex items-center border-b border-gray-50">
         <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => navigate('/')}
-          className="rounded-full hover:bg-gray-100"
+          className="rounded-full hover:bg-gray-100 shrink-0"
         >
           <ArrowLeft size={20} />
         </Button>
-        <h1 className="text-base font-bold truncate flex-1">
-          Detail Produk
-        </h1>
+        <span className="text-lg font-black text-gray-900 ml-4 tracking-tight">Detail Produk</span>
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto flex flex-col max-w-6xl mx-auto w-full">
+      <main className="flex-1 overflow-auto flex flex-col items-center bg-[#F8F9FB] w-full">
         {/* Top Section: Horizontal Scrollable Cards */}
-        <div className="px-4 pt-0 pb-0 relative group">
-          <div className="relative flex items-center">
-            <div className="flex-1 overflow-x-auto scrollbar-hide scroll-smooth flex flex-row gap-6 px-4 pt-4 pb-4">
+        <div className="w-full max-w-sm px-4 pt-6 pb-2">
+          <div className="relative flex items-center justify-center">
+            <div className="flex overflow-x-auto scrollbar-hide snap-x flex-row gap-4 px-2 pt-2 pb-6 w-full">
               {productsToShow.map((p) => (
-                <button
+                <div
                   key={p.id}
-                  onClick={() => navigate(`/product/${p.id}`)}
-                  className={cn(
-                    "flex-shrink-0 w-40 h-40 md:w-64 md:h-64 aspect-square bg-white border-0 border-none rounded-2xl flex items-center justify-center p-0 relative overflow-hidden transition-all duration-500 outline-none",
-                    product.id === p.id 
-                      ? "z-10 shadow-lg" 
-                      : "opacity-30 hover:opacity-100"
-                  )}
+                  className="flex-shrink-0 snap-center w-full max-w-[240px]"
                 >
-                  {p.image ? (
-                    <img 
-                      src={p.image} 
-                      alt={p.name} 
-                      className={cn(
-                        "w-full h-full object-contain transition-all duration-700",
-                        product.id !== p.id && "grayscale"
-                      )}
-                      referrerPolicy="no-referrer" 
-                      onError={(e) => {
-                        const img = e.target as HTMLImageElement;
-                        const parent = img.parentElement;
-                        if (!parent) return;
-
-                        img.classList.add('hidden');
-                        parent.classList.add('flex-col', 'items-center', 'gap-2');
-                        
-                        // Check if we already added the error message
-                        if (!parent.querySelector('.error-label')) {
-                          const iconDiv = document.createElement('div');
-                          iconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package text-gray-200"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>';
-                          const label = document.createElement('span');
-                          label.className = "error-label text-xs text-gray-300 font-bold uppercase tracking-widest";
-                          label.innerText = "Error Loading Image";
-                          parent.appendChild(iconDiv);
-                          parent.appendChild(label);
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-1 text-primary/30">
-                      <Package size={32} strokeWidth={1.5} />
-                      <span className="text-xs font-black uppercase tracking-widest">{p.name.substring(0, 1)}</span>
-                    </div>
-                  )}
-
-                  {/* Indicators Badge Container */}
-                  <div className="absolute top-3 right-3 flex flex-col gap-1.5 z-[11]">
-                    {/* SO Indicator */}
-                    {p.soChecked && (
-                      <div className="w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                        <span className="text-[7px] font-black leading-none">SO</span>
+                  <button
+                    onClick={() => navigate(`/product/${p.id}`)}
+                    className={cn(
+                      "w-full aspect-square bg-white rounded-[2.5rem] flex items-center justify-center p-4 relative overflow-hidden transition-all duration-500 outline-none",
+                      product.id === p.id 
+                        ? "shadow-[0_20px_50px_rgba(0,0,0,0.08)] scale-100" 
+                        : "opacity-40 scale-90 grayscale"
+                    )}
+                  >
+                    {p.image ? (
+                      <img 
+                        src={p.image} 
+                        alt={p.name} 
+                        className="w-full h-full object-contain"
+                        referrerPolicy="no-referrer" 
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-1 text-gray-200">
+                        <Package size={64} strokeWidth={1} />
                       </div>
                     )}
-                    {/* EXP Indicator */}
-                    {p.lastChecked && (
-                      <div className="w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                        <span className="text-[7px] font-black leading-none">EXP</span>
-                      </div>
-                    )}
-                    {/* Kerapian Indicator */}
-                    {p.tidyChecked && (
-                      <div className="w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                        <span className="text-[7px] font-black leading-none">RP</span>
-                      </div>
-                    )}
-                    {/* Harga Indicator */}
-                    {p.priceChecked && (
-                      <div className="w-5 h-5 bg-yellow-500 text-gray-900 rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-                        <span className="text-[7px] font-black leading-none">HR</span>
-                      </div>
-                    )}
-                  </div>
-                </button>
+                  </button>
+                </div>
               ))}
             </div>
           </div>
         </div>
 
         {/* Detailed Information Section */}
-        <div className="px-4 pb-12 pt-0">
+        <div className="w-full max-w-sm px-6 space-y-8 pb-10">
           <motion.div 
             key={product.id}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="space-y-6 px-4 md:px-8"
+            className="space-y-8"
           >
-            {/* Title & Badge */}
-            <div className="space-y-2">
-              <h2 className="text-base md:text-lg font-black text-gray-900 leading-tight tracking-tighter px-2">
-                {product.name}
-              </h2>
+            {/* Product Title */}
+            <h2 className="text-xl font-black text-gray-900 leading-tight tracking-tighter text-center px-4">
+              {product.name}
+            </h2>
+
+            {/* Technical Information Dotted List */}
+            <div className="space-y-6 px-2">
+              {[
+                { label: 'BARIS', value: String(activeLoc.shelfIdx + 1).padStart(2, '0') },
+                { label: 'SELVING', value: String(activeLoc.slotIdx + 1).padStart(2, '0') },
+                { label: 'BARCODE/PLU', value: product.plu || '-' },
+                { label: 'INTERNAL SKU', value: product.sku || '-' },
+                { label: 'RH', value: String(product.rh || '0') },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-[#A5ADC5] uppercase tracking-widest flex-shrink-0">
+                    {item.label}
+                  </span>
+                  <div className="flex-1 border-b border-dotted border-gray-300 mb-0.5"></div>
+                  <span className="text-base font-black text-[#1A1F36] tracking-tight tabular-nums">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-              {/* Identity Column */}
-              <div className="md:col-span-7 space-y-4">
-                {/* Technical Information Dotted List */}
-                <div className="space-y-4 px-2">
-                  {[
-                    { label: 'Baris', value: String(activeLoc.shelfIdx + 1).padStart(2, '0') },
-                    { label: 'Selving', value: String(activeLoc.slotIdx + 1).padStart(2, '0') },
-                    { label: 'Barcode/PLU', value: product.plu || '-' },
-                    { label: 'Internal SKU', value: product.sku || '-' },
-                    { label: 'RH', value: String(product.rh || '0') },
-                  ].map((item, idx) => (
-                    <div key={idx} className="flex items-end gap-2 group">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] flex-shrink-0">
-                        {item.label}
-                      </span>
-                      <div className="flex-1 border-b-2 border-dotted border-gray-200 mb-1 group-hover:border-primary/30 transition-colors"></div>
-                      <span className="text-sm font-black text-gray-900 tracking-tight tabular-nums">
-                        {item.value}
-                      </span>
-                    </div>
-                  ))}
+            {/* Expiry Picker Row */}
+            <div className="relative" ref={calendarRef}>
+              <button
+                onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                className="w-full h-20 px-6 bg-white rounded-[2rem] flex items-center justify-between transition-all active:scale-[0.98] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white hover:border-gray-100"
+              >
+                <div className="flex flex-col items-start translate-y-0.5">
+                  <span className="text-[10px] font-bold text-[#A5ADC5] uppercase tracking-widest mb-1.5">TANGGAL KEDALUWARSA</span>
+                  <span className={cn("text-lg font-black tracking-tight", !product.expiryDate ? "text-[#C1C9DD]" : "text-[#1A1F36]")}>
+                    {product.expiryDate || 'Pilih Tanggal...'}
+                  </span>
                 </div>
-              </div>
-
-              {/* Status & Expiry Column */}
-              <div className="md:col-span-5 space-y-6">
-                {/* Expiry Picker & Confirmation Column */}
-                <div className="space-y-4">
-                  <div className="space-y-6">
-                    {/* Expiry Picker Row */}
-                    <div className="relative" ref={calendarRef}>
-                      <button
-                        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-                        className="w-full h-14 px-5 bg-gray-50 rounded-2xl flex items-center justify-between transition-all active:scale-[0.98] hover:bg-white border border-transparent hover:border-gray-100 shadow-sm"
-                      >
-                        <div className="flex flex-col items-start">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Tanggal Kedaluwarsa</span>
-                          <span className={cn("text-base font-black tracking-tight", !product.expiryDate && "text-gray-300")}>
-                            {product.expiryDate || 'Pilih Tanggal...'}
-                          </span>
-                        </div>
-                        <CalendarIcon size={18} className="text-gray-400" />
-                      </button>
-
-                      <AnimatePresence>
-                        {isCalendarOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 4, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute left-0 bottom-full mb-4 z-[120] bg-white rounded-3xl p-4 origin-bottom-left border border-gray-100 shadow-2xl shadow-black/10 w-[310px]"
-                          >
-                            <div className="flex flex-col items-center">
-                              <DayPicker
-                                mode="single"
-                                selected={currentExpiryDate}
-                                onSelect={(date) => {
-                                  if (date) {
-                                    onUpdateProduct(product.id, { expiryDate: format(date, 'dd/MM/yyyy') });
-                                    setIsCalendarOpen(false);
-                                  }
-                                }}
-                                locale={id}
-                                className="m-0"
-                                showOutsideDays
-                              />
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Action Buttons Row */}
-                    <div className="flex items-center justify-between gap-2 px-1">
-                      <div className="flex flex-col items-center gap-1.5 flex-1">
-                        <Button 
-                          className={cn(
-                            "w-full h-12 rounded-2xl flex items-center justify-center border-none transition-all active:scale-95 shadow-lg text-[11px] font-black",
-                            product.lastChecked 
-                              ? "bg-primary text-white shadow-primary/30" 
-                              : "bg-gray-100 text-gray-400"
-                          )}
-                          onClick={() => {
-                            const now = new Date().toLocaleString('id-ID', { 
-                              day: '2-digit', month: 'short', year: 'numeric',
-                              hour: '2-digit', minute: '2-digit'
-                            });
-                            onUpdateProduct(product.id, { lastChecked: product.lastChecked ? undefined : now });
-                          }}
-                        >
-                          EXP
-                        </Button>
-                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tight">Produk</span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-1.5 flex-1">
-                        <Button 
-                          className={cn(
-                            "w-full h-12 rounded-2xl flex items-center justify-center border-none transition-all active:scale-95 shadow-lg text-[11px] font-black",
-                            activeGondola?.shelves[activeLoc.shelfIdx]?.every((p: any) => p.tidyChecked)
-                              ? "bg-green-500 text-white shadow-green-500/30"
-                              : "bg-gray-100 text-gray-400"
-                          )}
-                          onClick={() => {
-                            if (!activeGondola || activeLoc.shelfIdx === -1) return;
-                            const currentShelf = activeGondola.shelves[activeLoc.shelfIdx];
-                            const anyMissing = currentShelf.some((p: any) => !p.tidyChecked);
-                            currentShelf.forEach((p: any) => {
-                              onUpdateProduct(p.id, { tidyChecked: anyMissing ? true : false });
-                            });
-                          }}
-                        >
-                          RP
-                        </Button>
-                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tight">Selving</span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-1.5 flex-1">
-                        <Button 
-                          className={cn(
-                            "w-full h-12 rounded-2xl flex items-center justify-center border-none transition-all active:scale-95 shadow-lg text-[11px] font-black",
-                            activeGondola?.shelves.flat().every((p: any) => p.priceChecked)
-                              ? "bg-yellow-500 text-gray-900 shadow-yellow-500/30"
-                              : "bg-gray-100 text-gray-400"
-                          )}
-                          onClick={() => {
-                            if (!activeGondola) return;
-                            const allProducts = activeGondola.shelves.flat();
-                            const anyMissing = allProducts.some((p: any) => !p.priceChecked);
-                            allProducts.forEach((p: any) => {
-                              onUpdateProduct(p.id, { priceChecked: anyMissing ? true : false });
-                            });
-                          }}
-                        >
-                          HR
-                        </Button>
-                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tight">Rak</span>
-                      </div>
-
-                      <div className="flex flex-col items-center gap-1.5 flex-1">
-                        <Button 
-                          className={cn(
-                            "w-full h-12 rounded-2xl flex items-center justify-center border-none transition-all active:scale-95 shadow-xl text-[11px] font-black uppercase",
-                            activeGondola?.shelves.flat().every((p: any) => p.soChecked)
-                              ? "bg-orange-500 text-white shadow-orange-500/30"
-                              : "bg-gray-100 text-gray-400"
-                          )}
-                          onClick={() => {
-                            if (!activeGondola) return;
-                            const allProducts = activeGondola.shelves.flat();
-                            const anyMissing = allProducts.some((p: any) => !p.soChecked);
-                            const now = new Date().toLocaleString('id-ID', { 
-                              day: '2-digit', month: 'short', year: 'numeric',
-                              hour: '2-digit', minute: '2-digit'
-                            });
-                            
-                            allProducts.forEach((p: any) => {
-                              onUpdateProduct(p.id, { soChecked: anyMissing ? now : null });
-                            });
-                          }}
-                        >
-                          SO
-                        </Button>
-                        <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tight">Semua</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col gap-3">
-                    <p className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                      {product.lastChecked ? `Terakhir: ${product.lastChecked}` : 'Belum dicek'}
-                    </p>
-                  </div>
+                <div className={cn(
+                  "p-3 rounded-2xl transition-colors",
+                  isCalendarOpen ? "bg-primary/10 text-primary" : "text-[#A5ADC5] bg-gray-50"
+                )}>
+                  <CalendarIcon size={24} />
                 </div>
-              </div>
+              </button>
+
+              <AnimatePresence>
+                {isCalendarOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 10, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute left-0 bottom-full mb-4 z-[120] bg-white rounded-[2.5rem] p-6 border border-gray-100 shadow-2xl shadow-black/10 w-full"
+                  >
+                    <div className="flex flex-col items-center">
+                      <DayPicker
+                        mode="single"
+                        selected={currentExpiryDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            onUpdateProduct(product.id, { expiryDate: format(date, 'dd/MM/yyyy') });
+                            setIsCalendarOpen(false);
+                          }
+                        }}
+                        locale={id}
+                        className="m-0"
+                        showOutsideDays
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Action Buttons Grid */}
+            <div className="grid grid-cols-4 gap-3 px-1">
+              {[
+                { 
+                  id: 'exp', 
+                  label: 'EXP', 
+                  subLabel: 'PRODUK', 
+                  active: !!product.lastChecked,
+                  color: 'bg-primary shadow-primary/20',
+                  onClick: () => {
+                    const now = new Date().toLocaleString('id-ID', { 
+                      day: '2-digit', month: 'short', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit'
+                    });
+                    onUpdateProduct(product.id, { lastChecked: product.lastChecked ? undefined : now });
+                  }
+                },
+                { 
+                  id: 'rp', 
+                  label: 'RP', 
+                  subLabel: 'SELVING', 
+                  active: activeGondola?.shelves[activeLoc.shelfIdx]?.every((p: any) => p.tidyChecked),
+                  color: 'bg-green-500 shadow-green-500/20',
+                  onClick: () => {
+                    if (!activeGondola || activeLoc.shelfIdx === -1) return;
+                    const currentShelf = activeGondola.shelves[activeLoc.shelfIdx];
+                    const anyMissing = currentShelf.some((p: any) => !p.tidyChecked);
+                    currentShelf.forEach((p: any) => onUpdateProduct(p.id, { tidyChecked: anyMissing }));
+                  }
+                },
+                { 
+                  id: 'hr', 
+                  label: 'HR', 
+                  subLabel: 'RAK', 
+                  active: activeGondola?.shelves.flat().every((p: any) => p.priceChecked),
+                  color: 'bg-yellow-500 shadow-yellow-500/20 text-gray-900',
+                  onClick: () => {
+                    if (!activeGondola) return;
+                    const allProducts = activeGondola.shelves.flat();
+                    const anyMissing = allProducts.some((p: any) => !p.priceChecked);
+                    allProducts.forEach((p: any) => onUpdateProduct(p.id, { priceChecked: anyMissing }));
+                  }
+                },
+                { 
+                  id: 'so', 
+                  label: 'SO', 
+                  subLabel: 'SEMUA', 
+                  active: activeGondola?.shelves.flat().every((p: any) => p.soChecked),
+                  color: 'bg-orange-500 shadow-orange-500/20',
+                  onClick: () => {
+                    if (!activeGondola) return;
+                    const allProducts = activeGondola.shelves.flat();
+                    const anyMissing = allProducts.some((p: any) => !p.soChecked);
+                    const now = new Date().toLocaleString('id-ID', { 
+                      day: '2-digit', month: 'short', year: 'numeric',
+                      hour: '2-digit', minute: '2-digit'
+                    });
+                    allProducts.forEach((p: any) => onUpdateProduct(p.id, { soChecked: anyMissing ? now : null }));
+                  }
+                },
+              ].map((btn) => (
+                <div key={btn.id} className="flex flex-col items-center gap-2">
+                  <button 
+                    onClick={btn.onClick}
+                    className={cn(
+                      "w-full aspect-square md:aspect-auto md:h-16 rounded-[1.5rem] flex items-center justify-center transition-all active:scale-90 shadow-lg text-sm font-black",
+                      btn.active ? btn.color + " text-white" : "bg-white text-[#C1C9DD] shadow-[0_10px_20px_rgba(0,0,0,0.02)]"
+                    )}
+                  >
+                    {btn.label}
+                  </button>
+                  <span className="text-[7px] font-black text-[#A5ADC5] uppercase tracking-wider">{btn.subLabel}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer Text */}
+            <div className="pt-4 flex flex-col items-center">
+              <p className="text-[10px] font-black text-[#A5ADC5] uppercase tracking-[0.25em]">
+                {product.lastChecked ? `TERAKHIR: ${product.lastChecked}` : 'BELUM DICEK'}
+              </p>
             </div>
           </motion.div>
         </div>
