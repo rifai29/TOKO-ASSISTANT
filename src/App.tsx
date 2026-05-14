@@ -273,30 +273,6 @@ export default function App() {
         settings: { ...INITIAL_SETTINGS, name: "HB1", shelfCount: 5 },
         shelves: Array.from({ length: 5 }, () => []),
         lastUpdated: new Date().toLocaleString('id-ID')
-      },
-      {
-        id: 'hb1-limid',
-        settings: { ...INITIAL_SETTINGS, name: "HB 1(LIMID)", shelfCount: 5 },
-        shelves: [
-          [{ 
-            id: 'enfagrow-limid', 
-            name: 'ENFAGROW A+ GENTL CAN 800G (OL)', 
-            sku: '871204503236', 
-            plu: '437014', 
-            facing: 4, 
-            rh: 0, 
-            shelf: 1, 
-            slot: 1, 
-            expiryDate: 'CAN MILK',
-            image: 'https://images.tokopedia.net/img/cache/700/VqbcmM/2022/1/19/33b7e477-7d88-4673-9844-307983637209.jpg?v=3',
-            gondolaId: 'hb1-limid' 
-          }],
-          [],
-          [],
-          [],
-          []
-        ],
-        lastUpdated: new Date().toLocaleString('id-ID')
       }
     ];
 
@@ -342,62 +318,14 @@ export default function App() {
 
     let targetActiveId = state.activeGondolaId;
 
-    // Migration: Ensure HB1 LIMID exists for the user
+    // Remove HB 1 LIMID if requested ("HAPUS HB 1 LIMID")
     const hasLimid = newGondolas.some((g) => isLimidName(g.settings?.name || ""));
-    let activeLimidId: string | null = null;
-
-    if (!hasLimid) {
-      const id = "hb1-limid-preset";
-      const hb1Limid: Gondola = {
-        id,
-        settings: { ...INITIAL_SETTINGS, name: "HB 1(LIMID)", shelfCount: 5 },
-        shelves: Array.from({ length: 5 }, () => []),
-        lastUpdated: new Date().toLocaleString("id-ID"),
-      };
-      newGondolas.push(hb1Limid);
-      targetActiveId = id;
-      activeLimidId = id;
+    if (hasLimid) {
+      newGondolas = newGondolas.filter(g => !isLimidName(g.settings?.name || ""));
+      if (isLimidName(newGondolas.find(g => g.id === targetActiveId)?.settings.name || "")) {
+        targetActiveId = newGondolas[0]?.id || 'g1';
+      }
       modified = true;
-    } else {
-      // Find the Limid ID for catalog check
-      const limidG = newGondolas.find(g => isLimidName(g.settings?.name || ""));
-      if (limidG) activeLimidId = limidG.id;
-
-      // Ensure Enfagrow is at Shelf 1, Slot 1 in HB 1(LIMID) as requested ("TAMBAHKAN... DI SELVING 1 BARIS 1")
-      newGondolas = newGondolas.map((g) => {
-        if (isLimidName(g.settings?.name || "")) {
-          const newShelves = [...g.shelves];
-          if (newShelves.length > 0) {
-            const sharedId = "enfagrow-limid-v1";
-            const firstShelf = newShelves[0];
-            const hasCorrectProductAtPos1 = firstShelf.length > 0 && 
-                                           firstShelf[0].sku === enfagrowBase.sku && 
-                                           firstShelf[0].id === sharedId &&
-                                           firstShelf[0].image === enfagrowBase.image;
-            
-            if (!hasCorrectProductAtPos1) {
-              // Remove any duplicates first
-              const cleanedShelves = newShelves.map(shelf => shelf.filter(p => p.sku !== enfagrowBase.sku));
-              // Prepend to shelf 1
-              cleanedShelves[0] = [
-                {
-                  ...enfagrowBase,
-                  id: sharedId,
-                  gondolaId: g.id,
-                },
-                ...cleanedShelves[0]
-              ];
-              modified = true;
-              return {
-                ...g,
-                shelves: cleanedShelves,
-                lastUpdated: new Date().toLocaleString("id-ID"),
-              };
-            }
-          }
-        }
-        return g;
-      });
     }
 
     // Ensure all existing instances of Enfagrow have the correct image (Global fix for broken images)
@@ -415,30 +343,6 @@ export default function App() {
       ...g,
       shelves: g.shelves.map(shelf => shelf.map(updateEnfagrowImage))
     }));
-
-    // Ensure Enfagrow is in the catalog for specifically HB1 LIMID
-    // Also remove duplicates to satisfy user ("KOK ADA 2 1 AJA PRODUKNYA")
-    if (activeLimidId) {
-      const sharedId = "enfagrow-limid-v1";
-      const skuToMatch = enfagrowBase.sku;
-      
-      // Filter out any other Enfagrow products that might be causing duplicates
-      const filtered = newProducts.filter(p => p.id === sharedId || p.sku !== skuToMatch);
-      
-      if (filtered.length !== newProducts.length) {
-        newProducts = filtered;
-        modified = true;
-      }
-
-      if (!newProducts.some(p => p.id === sharedId)) {
-        newProducts.push({
-          ...enfagrowBase,
-          id: sharedId,
-          gondolaId: activeLimidId
-        });
-        modified = true;
-      }
-    }
 
     if (modified || targetActiveId !== state.activeGondolaId) {
       setState(prev => ({

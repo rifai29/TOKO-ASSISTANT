@@ -210,7 +210,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {activeTab === 'products' && (
             <div className="space-y-3 animate-in fade-in duration-500 px-1">
-              <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest ml-1">Katalog Produk</Label>
               <div className="space-y-2">
                 {filteredProducts.map(p => (
                   <div key={p.id}>
