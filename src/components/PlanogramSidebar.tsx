@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Trash2, Check, Package, X, Pencil, Layers, LayoutGrid, Calendar, Clock, ExternalLink } from 'lucide-react';
+import { Plus, Trash2, Check, Package, X, Pencil, Layers, LayoutGrid, Calendar, Clock, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
@@ -57,6 +57,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [expandedShelves, setExpandedShelves] = useState<Record<number, boolean>>(() => {
+    // Default all shelves to expanded (true)
+    return {};
+  });
+
+  const toggleShelf = (shelfNum: number) => {
+    setExpandedShelves(prev => ({
+      ...prev,
+      [shelfNum]: prev[shelfNum] === false ? true : false
+    }));
+  };
 
   const filteredGondolas = gondolas.filter(g => 
     g.settings.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -222,69 +233,94 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   .map(Number)
                   .sort((a, b) => a - b);
 
-                return sortedShelves.map((shelfNum) => (
-                  <div key={shelfNum} className="space-y-2">
-                    <div className="flex items-center gap-2 px-1 mb-1">
-                      <div className="h-4 w-1 bg-primary rounded-full" />
-                      <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest">
-                        SELVING {shelfNum || '?'}
-                      </Label>
-                      <div className="flex-1 h-px bg-gray-100" />
-                      <span className="text-[8px] font-bold text-gray-400">{groupedByShelf[shelfNum].length} ITEM</span>
-                    </div>
-                    <div className="space-y-1">
-                      {groupedByShelf[shelfNum].map(p => (
-                        <div key={p.id}>
-                          <div 
-                            onClick={() => onSelectProduct(selectedProductId === p.id ? null : p.id)}
-                            className={cn(
-                              "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
-                              selectedProductId === p.id 
-                                ? "bg-gray-200 text-gray-900" 
-                                : "hover:bg-gray-100"
-                            )}
+                return sortedShelves.map((shelfNum) => {
+                  const isExpanded = expandedShelves[shelfNum] !== false;
+                  return (
+                    <div key={shelfNum} className="space-y-2">
+                      <div 
+                        onClick={() => toggleShelf(shelfNum)}
+                        className="flex items-center gap-2 px-1 mb-1 cursor-pointer group/shelf select-none"
+                      >
+                        <div className="h-4 w-1 bg-primary rounded-full" />
+                        <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest cursor-pointer group-hover/shelf:text-primary transition-colors">
+                          SELVING {shelfNum || '?'}
+                        </Label>
+                        <div className="flex-1 h-px bg-gray-100" />
+                        <div className="flex items-center gap-1">
+                          <span className="text-[8px] font-bold text-gray-400">{groupedByShelf[shelfNum].length} ITEM</span>
+                          {isExpanded ? (
+                            <ChevronDown size={10} className="text-gray-400 group-hover/shelf:text-primary" />
+                          ) : (
+                            <ChevronRight size={10} className="text-gray-400 group-hover/shelf:text-primary" />
+                          )}
+                        </div>
+                      </div>
+                      
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
                           >
-                            <div className="flex items-start gap-1">
-                              <div className={cn(
-                                "w-6 h-6 rounded-md shrink-0 flex items-center justify-center text-[9px] font-bold overflow-hidden mt-0.5 transition-colors",
-                                selectedProductId === p.id ? "bg-primary text-white" : "bg-primary/10 text-primary"
-                              )}>
-                                {p.image ? (
-                                  <img src={p.image} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                                ) : (
-                                  (p.plu || 'P').substring(0, 1)
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-1">
-                                  <p className="text-[10px] font-bold leading-tight truncate flex-1">{p.name}</p>
-                                  <div className="flex items-center gap-0.5 shrink-0">
-                                    <button 
-                                      onClick={(e) => { e.stopPropagation(); navigate(`/edit-product/${p.id}`); }}
-                                      className="p-1 rounded-md text-primary hover:bg-white/50"
-                                    >
-                                      <Pencil size={10} />
-                                    </button>
-                                    <button 
-                                      onClick={(e) => { e.stopPropagation(); navigate(`/product/${p.id}`); }}
-                                      className="p-1 rounded-md text-primary hover:bg-white/50"
-                                    >
-                                      <ExternalLink size={10} />
-                                    </button>
+                            <div className="space-y-1 pb-1">
+                              {groupedByShelf[shelfNum].map(p => (
+                                <div key={p.id}>
+                                  <div 
+                                    onClick={() => onSelectProduct(selectedProductId === p.id ? null : p.id)}
+                                    className={cn(
+                                      "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
+                                      selectedProductId === p.id 
+                                        ? "bg-gray-200 text-gray-900" 
+                                        : "hover:bg-gray-100"
+                                    )}
+                                  >
+                                    <div className="flex items-start gap-1">
+                                      <div className={cn(
+                                        "w-6 h-6 rounded-md shrink-0 flex items-center justify-center text-[9px] font-bold overflow-hidden mt-0.5 transition-colors",
+                                        selectedProductId === p.id ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                                      )}>
+                                        {p.image ? (
+                                          <img src={p.image} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                        ) : (
+                                          (p.plu || 'P').substring(0, 1)
+                                        )}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-1">
+                                          <p className="text-[10px] font-bold leading-tight truncate flex-1">{p.name}</p>
+                                          <div className="flex items-center gap-0.5 shrink-0">
+                                            <button 
+                                              onClick={(e) => { e.stopPropagation(); navigate(`/edit-product/${p.id}`); }}
+                                              className="p-1 rounded-md text-primary hover:bg-white/50"
+                                            >
+                                              <Pencil size={10} />
+                                            </button>
+                                            <button 
+                                              onClick={(e) => { e.stopPropagation(); navigate(`/product/${p.id}`); }}
+                                              className="p-1 rounded-md text-primary hover:bg-white/50"
+                                            >
+                                              <ExternalLink size={10} />
+                                            </button>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 mt-0.5">
+                                          <span className="text-[8px] font-bold text-gray-400 tabular-nums">{p.sku}</span>
+                                          <span className="text-[8px] font-bold text-gray-500 opacity-60">• {p.facing}F</span>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-1.5 mt-0.5">
-                                  <span className="text-[8px] font-bold text-gray-400 tabular-nums">{p.sku}</span>
-                                  <span className="text-[8px] font-bold text-gray-500 opacity-60">• {p.facing}F</span>
-                                </div>
-                              </div>
+                              ))}
                             </div>
-                          </div>
-                        </div>
-                      ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                  </div>
-                ));
+                  );
+                });
               })()}
             </div>
           )}
