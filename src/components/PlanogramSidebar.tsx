@@ -220,7 +220,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
 
           {activeTab === 'products' && (
-            <div className="space-y-4 animate-in fade-in duration-500 px-1">
+            <div className="space-y-1 animate-in fade-in duration-500 px-1">
               {(() => {
                 const groupedByShelf: Record<number, Product[]> = filteredProducts.reduce((acc, p) => {
                   const shelf = p.shelf || 0;
@@ -236,35 +236,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 return sortedShelves.map((shelfNum) => {
                   const isExpanded = expandedShelves[shelfNum] !== false;
                   return (
-                    <div key={shelfNum} className="space-y-2">
+                    <div key={shelfNum} className="space-y-0.5">
                       <div 
                         onClick={() => toggleShelf(shelfNum)}
-                        className="flex items-center gap-2 px-1 mb-1 cursor-pointer group/shelf select-none"
+                        className="flex items-center gap-1.5 px-1 py-1 cursor-pointer group/shelf select-none hover:bg-gray-50 rounded-md transition-colors"
                       >
-                        <div className="h-4 w-1 bg-primary rounded-full" />
-                        <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest cursor-pointer group-hover/shelf:text-primary transition-colors">
+                        <div className="h-3 w-0.5 bg-primary/60 rounded-full" />
+                        <Label className="text-[9px] font-display font-black text-gray-500 uppercase tracking-wider cursor-pointer group-hover/shelf:text-primary transition-colors">
                           SELVING {shelfNum || '?'}
                         </Label>
-                        <div className="flex-1 h-px bg-gray-100" />
+                        <div className="flex-1 h-px bg-gray-100/60" />
                         <div className="flex items-center gap-1">
-                          <span className="text-[8px] font-bold text-gray-400">{groupedByShelf[shelfNum].length} ITEM</span>
+                          <span className="text-[7.5px] font-bold text-gray-400">{groupedByShelf[shelfNum].length} ITEM</span>
                           {isExpanded ? (
-                            <ChevronDown size={10} className="text-gray-400 group-hover/shelf:text-primary" />
+                            <ChevronDown size={8} className="text-gray-400 group-hover/shelf:text-primary transition-transform duration-200" />
                           ) : (
-                            <ChevronRight size={10} className="text-gray-400 group-hover/shelf:text-primary" />
+                            <ChevronRight size={8} className="text-gray-400 group-hover/shelf:text-primary transition-transform duration-200" />
                           )}
                         </div>
                       </div>
                       
-                      <AnimatePresence>
+                      <AnimatePresence initial={false}>
                         {isExpanded && (
                           <motion.div 
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "easeInOut" }}
                             className="overflow-hidden"
                           >
-                            <div className="space-y-1 pb-1">
+                            <div className="space-y-0.5 pb-1.5 pt-0.5 pl-2">
                               {groupedByShelf[shelfNum].map(p => (
                                 <div key={p.id}>
                                   <div 
