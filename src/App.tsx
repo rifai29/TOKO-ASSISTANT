@@ -95,69 +95,58 @@ function MainLayout({
   return (
     <div className="flex flex-col h-screen h-[100dvh] bg-[#F8F9FA] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
       
-      <header className="h-14 md:h-16 bg-white flex items-center justify-between px-3 md:px-8 shrink-0 z-40 sticky top-0 border-b border-gray-100">
-        <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-gray-600 hover:bg-gray-100 shrink-0"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            {isSidebarOpen ? <CloseIcon size={18} /> : <Menu size={18} />}
-          </Button>
-          <div className="flex flex-col">
-            <h2 className="text-xs md:text-sm font-display font-black text-gray-900 uppercase tracking-tight whitespace-nowrap">
-              {activeGondola?.settings?.name || '---'}
-            </h2>
-          </div>
-        </div>
+      <div className="flex-1 flex overflow-hidden relative p-0 gap-0">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="fixed top-3 left-3 h-10 w-10 rounded-xl text-gray-600 bg-white/80 backdrop-blur-md shadow-sm border border-gray-100 z-50 hover:bg-white transition-all active:scale-95"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen ? <CloseIcon size={18} /> : <Menu size={18} />}
+        </Button>
 
-        <div className="flex items-center gap-1.5 md:gap-2">
-          <div className="relative">
-            <input 
-              type="file" 
-              id="excel-import-header" 
-              className="hidden" 
-              accept=".xlsx, .xls"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleImportExcel(file);
-              }}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => document.getElementById('excel-import-header')?.click()}
-              className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-blue-600 hover:bg-blue-50 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
-              title="Import Excel"
-            >
-              <Upload size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
-            </Button>
-          </div>
+        <div className="fixed top-3 right-3 flex items-center gap-1.5 z-40">
+          <input 
+            type="file" 
+            id="excel-import-header" 
+            className="hidden" 
+            accept=".xlsx, .xls"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImportExcel(file);
+            }}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => document.getElementById('excel-import-header')?.click()}
+            className="h-10 w-10 rounded-xl text-blue-600 bg-white/80 backdrop-blur-md shadow-sm border border-gray-100 hover:bg-white hover:text-blue-700 transition-all active:scale-95 shadow-none"
+            title="Import Excel"
+          >
+            <Upload size={18} strokeWidth={2.5} />
+          </Button>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={handleExportExcel}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-green-600 hover:bg-green-50 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            className="h-10 w-10 rounded-xl text-green-600 bg-white/80 backdrop-blur-md shadow-sm border border-gray-100 hover:bg-white hover:text-green-700 transition-all active:scale-95 shadow-none"
             title="Export Excel"
           >
-            <FileSpreadsheet size={18} className="md:w-[20px] md:h-[20px]" strokeWidth={2.5} />
+            <FileSpreadsheet size={18} strokeWidth={2.5} />
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/add-product')}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-black hover:bg-gray-100 shrink-0 border-none flex items-center justify-center p-0 transition-all active:scale-95 shadow-none"
+            className="h-10 w-10 rounded-xl text-black bg-white/80 backdrop-blur-md shadow-sm border border-gray-100 hover:bg-white transition-all active:scale-95 shadow-none"
             title="Add Product"
           >
-            <Plus size={22} className="md:w-[24px] md:h-[24px]" strokeWidth={3} />
+            <Plus size={22} strokeWidth={3} />
           </Button>
         </div>
-      </header>
 
-      <div className="flex-1 flex overflow-hidden relative p-0 md:p-1 gap-1">
         <AnimatePresence>
           {isSidebarOpen && (
             <motion.div
