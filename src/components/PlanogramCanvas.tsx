@@ -28,7 +28,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
 
   return (
     <div className="flex-1 h-full overflow-auto relative custom-scrollbar bg-white">
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10 pt-16 pb-8 md:pt-20 px-2">
         <div 
           ref={canvasRef}
           className="relative print:shadow-none print:border-none"
