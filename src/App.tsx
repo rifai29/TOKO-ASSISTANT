@@ -96,16 +96,25 @@ function MainLayout({
     <div className="flex flex-col h-screen h-[100dvh] bg-[#F8F9FA] text-foreground selection:bg-primary/20 font-sans antialiased overflow-hidden">
       
       <div className="flex-1 flex overflow-hidden relative p-0 gap-0">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="fixed top-3 left-3 h-9 w-9 md:h-10 md:w-10 rounded-xl text-gray-600 bg-white/90 backdrop-blur-md shadow-sm border border-gray-150 z-50 hover:bg-white transition-all active:scale-95"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          {isSidebarOpen ? <CloseIcon size={16} className="md:w-[18px] md:h-[18px]" /> : <Menu size={16} className="md:w-[18px] md:h-[18px]" />}
-        </Button>
+        <div className="fixed top-4 left-4 flex items-center gap-2 md:gap-3 z-50">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-gray-600 bg-white shadow-md border border-gray-150 hover:bg-white transition-all active:scale-95 flex items-center justify-center shrink-0"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? <CloseIcon size={20} className="md:w-[24px] md:h-[24px]" /> : <Menu size={20} className="md:w-[24px] md:h-[24px]" />}
+          </Button>
 
-        <div className="fixed top-3 right-3 flex items-center gap-1.5 z-40">
+          <div className="h-12 md:h-14 px-4 md:px-5 rounded-2xl bg-white shadow-md border border-gray-150 flex items-center gap-2 select-none animate-in fade-in duration-300">
+            <span className="text-[10px] md:text-xs font-display font-medium text-gray-400 uppercase tracking-wider leading-none select-none">RAK:</span>
+            <span className="text-sm md:text-base font-display font-black text-gray-900 uppercase tracking-tight leading-none">
+              {activeGondola?.settings?.name || '---'}
+            </span>
+          </div>
+        </div>
+
+        <div className="fixed top-4 right-4 flex items-center gap-2 md:gap-3 z-40">
           <input 
             type="file" 
             id="excel-import-header" 
@@ -120,30 +129,30 @@ function MainLayout({
             variant="ghost"
             size="icon"
             onClick={() => document.getElementById('excel-import-header')?.click()}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-blue-600 bg-white/90 backdrop-blur-md shadow-sm border border-gray-150 hover:bg-white hover:text-blue-700 transition-all active:scale-95 shadow-none"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-blue-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-blue-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
             title="Import Excel"
           >
-            <Upload size={16} className="md:w-[18px] md:h-[18px]" strokeWidth={2.5} />
+            <Upload size={20} className="md:w-[24px] md:h-[24px]" strokeWidth={2.5} />
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={handleExportExcel}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-green-600 bg-white/90 backdrop-blur-md shadow-sm border border-gray-150 hover:bg-white hover:text-green-700 transition-all active:scale-95 shadow-none"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-green-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-green-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
             title="Export Excel"
           >
-            <FileSpreadsheet size={16} className="md:w-[18px] md:h-[18px]" strokeWidth={2.5} />
+            <FileSpreadsheet size={20} className="md:w-[24px] md:h-[24px]" strokeWidth={2.5} />
           </Button>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate('/add-product')}
-            className="h-9 w-9 md:h-10 md:w-10 rounded-xl text-black bg-white/90 backdrop-blur-md shadow-sm border border-gray-150 hover:bg-white transition-all active:scale-95 shadow-none"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-black bg-white shadow-md border border-gray-150 hover:bg-white transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
             title="Add Product"
           >
-            <Plus size={20} className="md:w-[22px] md:h-[22px]" strokeWidth={3} />
+            <Plus size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={3} />
           </Button>
         </div>
 
