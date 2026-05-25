@@ -28,13 +28,13 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
 
   return (
     <div className="flex-1 h-full overflow-auto relative custom-scrollbar bg-white">
-      <div className="max-w-6xl mx-auto relative z-10 pt-24 pb-8 md:pt-28 px-2">
+      <div className="max-w-7xl mx-auto relative z-10 pt-24 pb-8 md:pt-28 px-4">
         <div 
           ref={canvasRef}
           className="relative print:shadow-none print:border-none"
         >
 
-          <div className="space-y-0">
+          <div className="space-y-6">
             {Array.from({ length: settings.shelfCount }).map((_, si) => {
               const shelf = shelves[si] || [];
               const isLastUsedShelf = shelves.slice(si + 1).every(s => !s || s.length === 0);
@@ -46,11 +46,11 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
               return (
                 <div 
                   key={si} 
-                  className="w-full relative overflow-x-auto custom-scrollbar group"
+                  className="w-full relative overflow-x-auto custom-scrollbar group pb-3"
                   onClick={() => selectedProductId && onPlaceProduct(si)}
                 >
                   <div className={cn(
-                    "flex items-end gap-1 md:gap-2 min-h-[100px] md:min-h-[130px] px-2 md:px-4 w-max transition-all",
+                    "flex items-end gap-1.5 md:gap-3 min-h-[110px] md:min-h-[160px] lg:min-h-[180px] px-3 md:px-5 w-max transition-all pb-1",
                     selectedProductId && "bg-gray-100/50 cursor-pointer hover:bg-gray-100"
                   )}>
                     <AnimatePresence mode="popLayout">
@@ -68,9 +68,9 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 navigate(`/product/${p.id}`);
                               }}
                               className={cn(
-                                "rounded-xl flex flex-col items-center justify-center p-0.5 md:p-1 text-center transition-all overflow-hidden relative shadow-sm border border-gray-100 bg-white",
-                                p.facing >= 3 ? "w-24 md:w-32" : p.facing >= 2 ? "w-20 md:w-24" : "w-14 md:w-16",
-                                "h-[100px] md:h-[130px]",
+                                "rounded-xl flex flex-col items-center justify-center p-1 md:p-1.5 text-center transition-all overflow-hidden relative shadow-sm border border-gray-100 bg-white",
+                                p.facing >= 3 ? "w-24 md:w-36 lg:w-44" : p.facing >= 2 ? "w-20 md:w-28 lg:w-34" : "w-14 md:w-20 lg:w-24",
+                                "h-[110px] md:h-[150px] lg:h-[170px]",
                                 !p.image && "bg-primary",
                                 selectedProductId === p.id && "ring-2 ring-blue-500"
                               )}
@@ -79,7 +79,7 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                                 <img 
                                   src={p.image} 
                                   alt={p.name} 
-                                  className="absolute inset-0 w-full h-full object-contain p-1" 
+                                  className="absolute inset-0 w-full h-full object-contain p-1.5" 
                                   referrerPolicy="no-referrer"
                                   onError={(e) => {
                                     const img = e.target as HTMLImageElement;
@@ -115,6 +115,16 @@ export const PlanogramCanvas: React.FC<CanvasProps> = ({
                           </motion.div>
                         ))}
                       </AnimatePresence>
+                    </div>
+
+                    {/* Realistic Steel Shelf Ground Line */}
+                    <div className="w-full h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 border-t border-b border-gray-400/30 rounded-sm shadow-sm relative flex items-center justify-between px-3 md:px-6 select-none shrink-0">
+                      <span className="text-[8px] md:text-[10px] font-mono font-black text-gray-500 uppercase tracking-widest">
+                        SELVING {String(si + 1).padStart(2, '0')}
+                      </span>
+                      <span className="text-[7.5px] md:text-[9.5px] font-mono font-bold text-gray-400 uppercase tracking-wider">
+                        {shelf.length} ITEM • FACING: {shelf.reduce((acc, p) => acc + (p.facing || 1), 0)}F
+                      </span>
                     </div>
                   </div>
                 );

@@ -86,40 +86,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
   });
 
   return (
-    <aside className="w-full md:w-80 flex flex-col h-full overflow-hidden z-20 bg-white">
-      <div className="px-1.5 pt-1 mb-1">
-        <div className="bg-gray-100 p-1 rounded-2xl flex flex-col gap-1 w-full">
+    <aside className="w-full md:w-96 flex flex-col h-full overflow-hidden z-20 bg-white border-r border-gray-100 shadow-sm">
+      <div className="px-3 pt-3 pb-2 mb-1">
+        <div className="bg-gray-100/80 p-1 rounded-2xl flex flex-col gap-1 w-full border border-gray-200/40">
           <div className="flex items-center gap-1 w-full">
             {[
-              { id: 'products', icon: LayoutGrid, title: 'Catalog' },
-              { id: 'rak', icon: LayoutGrid, title: 'Rak' },
+              { id: 'products', icon: LayoutGrid, title: 'Katalog' },
+              { id: 'rak', icon: LayoutGrid, title: 'Daftar Rak' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 title={tab.title}
                 className={cn(
-                  "flex-1 h-7 md:h-8 flex items-center justify-center transition-all rounded-xl",
+                  "flex-1 h-8 md:h-10 flex items-center justify-center gap-1.5 transition-all rounded-xl text-xs md:text-sm font-bold uppercase tracking-wide",
                   activeTab === tab.id 
-                    ? "bg-white text-primary" 
+                    ? "bg-white text-primary shadow-sm" 
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                 )}
               >
                 <tab.icon size={15} strokeWidth={2.5} className="shrink-0" />
+                <span className="hidden md:inline text-[11px] font-black">{tab.title}</span>
               </button>
             ))}
 
             <button
               onClick={() => setShowSearch(!showSearch)}
               className={cn(
-                "flex-1 h-7 md:h-8 text-[7px] md:text-[8px] font-bold flex items-center justify-center transition-all rounded-xl",
+                "flex-1 h-8 md:h-10 flex items-center justify-center gap-1.5 transition-all rounded-xl text-xs md:text-sm font-bold uppercase tracking-wide",
                 showSearch 
-                  ? "bg-white text-primary" 
+                  ? "bg-white text-primary shadow-sm" 
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
               )}
-              title="Search Catalog"
+              title="Cari..."
             >
-              <Search size={14} strokeWidth={2.5} />
+              <Search size={15} strokeWidth={2.5} className="shrink-0" />
+              <span className="hidden md:inline text-[11px] font-black">Cari</span>
             </button>
           </div>
 
@@ -135,13 +137,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors shrink-0" />
                   <input 
                     autoFocus
-                    placeholder={activeTab === 'rak' ? "Cari rak..." : "Cari katalog..."} 
+                    placeholder={activeTab === 'rak' ? "Cari nama rak..." : "Cari katalog..."} 
                     value={searchTerm}
                     onChange={e => {
                       setSearchTerm(e.target.value);
                     }}
                     onBlur={() => !searchTerm && setShowSearch(false)}
-                    className="w-full h-8 pl-8 pr-3 text-xs bg-white rounded-xl border-none transition-all placeholder:text-gray-400 font-bold outline-none"
+                    className="w-full h-9 pl-9 pr-3 text-xs bg-white rounded-xl border border-gray-200/50 transition-all placeholder:text-gray-400 font-bold outline-none"
                   />
                 </div>
               </motion.div>
@@ -156,18 +158,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="space-y-1.5 animate-in fade-in duration-500">
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest">Daftar Rak</Label>
+                  <Label className="text-xs font-display font-black text-gray-400 uppercase tracking-widest">Daftar Rak</Label>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-7 px-2 text-[10px] font-bold text-primary hover:bg-primary/10 rounded-lg"
+                    className="h-8 px-2.5 text-xs font-black text-primary hover:bg-primary/10 rounded-xl"
                     onClick={() => onAddGondola()}
                   >
-                    <Plus size={12} className="mr-1" /> Tambah Rak
+                    <Plus size={14} className="mr-1" /> Tambah Rak
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-1.5 px-1">
+                <div className="grid grid-cols-2 gap-3 px-1">
                   {filteredGondolas.map(g => {
                     const allProducts = g.shelves.flat();
                     const hasProducts = allProducts.length > 0;
@@ -178,37 +180,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         key={g.id}
                         onClick={() => onSelectGondola(g.id)}
                         className={cn(
-                          "aspect-square p-2 cursor-pointer transition-all rounded-2xl relative overflow-hidden flex flex-col items-center justify-center gap-1 group",
+                          "p-3 cursor-pointer transition-all rounded-2xl relative overflow-hidden flex items-center gap-2.5 group border",
                           activeGondolaId === g.id 
-                            ? "bg-gray-100/80 text-gray-900 shadow-none z-10" 
-                            : "hover:bg-gray-50 text-gray-600 bg-white border border-gray-100 hover:border-gray-200"
+                            ? "bg-gray-100/80 text-gray-900 border-gray-200 shadow-none z-10" 
+                            : "hover:bg-gray-50 text-gray-600 bg-white border-gray-100 hover:border-gray-200"
                         )}
                       >
                         {isCompleted && (
-                          <div className="absolute top-1 right-1 w-3.5 h-3.5 bg-primary text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
-                            <Check size={8} strokeWidth={4} />
+                          <div className="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
+                            <Check size={9} strokeWidth={4} />
                           </div>
                         )}
                         <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
+                          "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 border",
                           activeGondolaId === g.id 
-                            ? "bg-white text-gray-900 shadow-sm" 
-                            : "bg-gray-50 text-gray-400 group-hover:bg-gray-100 group-hover:text-primary/60"
+                            ? "bg-white text-gray-900 border-gray-200/50 shadow-sm" 
+                            : "bg-gray-50 text-gray-400 border-transparent group-hover:bg-gray-100 group-hover:text-primary/60"
                         )}>
                           <LayoutGrid size={16} strokeWidth={activeGondolaId === g.id ? 2.5 : 2} />
                         </div>
-                        <div className="text-center w-full px-0.5">
+                        <div className="min-w-0 flex-1 flex flex-col">
                           <p className={cn(
-                            "text-[8px] md:text-[9px] font-black tracking-tighter uppercase truncate",
-                            activeGondolaId === g.id ? "text-gray-900" : "text-gray-600"
+                            "text-[10px] md:text-xs font-black tracking-tight uppercase truncate",
+                            activeGondolaId === g.id ? "text-gray-900 font-extrabold" : "text-gray-700"
                           )}>
                             {g.settings.name}
                           </p>
-                          <p className={cn(
-                            "text-[7px] font-bold opacity-50",
-                            activeGondolaId === g.id ? "text-gray-500" : "text-gray-400"
-                          )}>
-                            {allProducts.length || 0}
+                          <p className="text-[9px] md:text-[10px] font-bold text-gray-400 mt-0.5">
+                            {allProducts.length || 0} ITEM
                           </p>
                         </div>
                       </div>
@@ -271,44 +270,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                   <div 
                                     onClick={() => onSelectProduct(selectedProductId === p.id ? null : p.id)}
                                     className={cn(
-                                      "p-1 cursor-pointer transition-all rounded-lg relative overflow-hidden",
+                                      "p-2 cursor-pointer transition-all rounded-xl relative overflow-hidden my-1",
                                       selectedProductId === p.id 
-                                        ? "bg-gray-200 text-gray-900" 
-                                        : "hover:bg-gray-100"
+                                        ? "bg-gray-100 text-gray-900 border border-gray-200" 
+                                        : "hover:bg-gray-50/80 border border-transparent"
                                     )}
                                   >
-                                    <div className="flex items-start gap-1">
+                                    <div className="flex items-center gap-3">
                                       <div className={cn(
-                                        "w-6 h-6 rounded-md shrink-0 flex items-center justify-center text-[9px] font-bold overflow-hidden mt-0.5 transition-colors",
-                                        selectedProductId === p.id ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                                        "w-10 h-10 md:w-12 md:h-12 rounded-lg shrink-0 flex items-center justify-center text-[11px] font-bold overflow-hidden transition-colors bg-white border border-gray-100 shadow-sm",
+                                        selectedProductId === p.id ? "ring-2 ring-primary" : ""
                                       )}>
                                         {p.image ? (
-                                          <img src={p.image} alt={p.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                          <img src={p.image} alt={p.name} className="w-full h-full object-contain p-1" referrerPolicy="no-referrer" />
                                         ) : (
-                                          (p.plu || 'P').substring(0, 1)
+                                          <span className="text-primary font-black uppercase text-xs">{(p.plu || 'P').substring(0, 1)}</span>
                                         )}
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between gap-1">
-                                          <p className="text-[10px] font-bold leading-tight truncate flex-1">{p.name}</p>
-                                          <div className="flex items-center gap-0.5 shrink-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                          <p className="text-[11px] md:text-xs font-bold leading-snug line-clamp-2 text-gray-800 flex-1">{p.name}</p>
+                                          <div className="flex items-center gap-1 shrink-0 mt-0.5">
                                             <button 
                                               onClick={(e) => { e.stopPropagation(); navigate(`/edit-product/${p.id}`); }}
-                                              className="p-1 rounded-md text-primary hover:bg-white/50"
+                                              className="p-1 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 transition-colors"
+                                              title="Edit"
                                             >
-                                              <Pencil size={10} />
+                                              <Pencil size={12} />
                                             </button>
                                             <button 
                                               onClick={(e) => { e.stopPropagation(); navigate(`/product/${p.id}`); }}
-                                              className="p-1 rounded-md text-primary hover:bg-white/50"
+                                              className="p-1 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 transition-colors"
+                                              title="Detail"
                                             >
-                                              <ExternalLink size={10} />
+                                              <ExternalLink size={12} />
                                             </button>
                                           </div>
                                         </div>
-                                        <div className="flex items-center gap-1.5 mt-0.5">
-                                          <span className="text-[8px] font-bold text-gray-400 tabular-nums">{p.sku}</span>
-                                          <span className="text-[8px] font-bold text-gray-500 opacity-60">• {p.facing}F</span>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <span className="text-[9px] md:text-[11px] font-semibold text-gray-400 font-mono tabular-nums bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">{p.sku}</span>
+                                          <span className="text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-wider">{p.facing}F</span>
                                         </div>
                                       </div>
                                     </div>

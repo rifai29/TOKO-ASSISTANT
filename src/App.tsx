@@ -169,7 +169,7 @@ function MainLayout({
         </AnimatePresence>
 
         <div className={cn(
-          "fixed md:relative inset-y-0 left-0 z-50 transition-all duration-500 transform w-[82%] max-w-[320px] md:w-80 h-full bg-white md:bg-transparent",
+          "fixed md:relative inset-y-0 left-0 z-50 transition-all duration-500 transform w-[82%] max-w-[320px] md:w-96 h-full bg-white md:bg-transparent",
           isSidebarOpen ? "translate-x-0 opacity-100" : "-translate-x-full md:w-0 opacity-0 md:pointer-events-none"
         )}>
           <Sidebar 
