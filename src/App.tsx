@@ -112,9 +112,7 @@ function MainLayout({
               {activeGondola?.settings?.name || '---'}
             </span>
           </div>
-        </div>
 
-        <div className="fixed top-4 right-4 flex items-center gap-2 md:gap-3 z-40">
           <input 
             type="file" 
             id="excel-import-header" 
@@ -129,7 +127,7 @@ function MainLayout({
             variant="ghost"
             size="icon"
             onClick={() => document.getElementById('excel-import-header')?.click()}
-            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-blue-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-blue-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-blue-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-blue-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0 shrink-0"
             title="Import Excel"
           >
             <Upload size={20} className="md:w-[24px] md:h-[24px]" strokeWidth={2.5} />
@@ -139,7 +137,7 @@ function MainLayout({
             variant="ghost"
             size="icon"
             onClick={handleExportExcel}
-            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-green-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-green-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-green-600 bg-white shadow-md border border-gray-150 hover:bg-white hover:text-green-700 transition-all active:scale-95 shadow-none flex items-center justify-center p-0 shrink-0"
             title="Export Excel"
           >
             <FileSpreadsheet size={20} className="md:w-[24px] md:h-[24px]" strokeWidth={2.5} />
@@ -149,7 +147,7 @@ function MainLayout({
             variant="ghost"
             size="icon"
             onClick={() => navigate('/add-product')}
-            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-black bg-white shadow-md border border-gray-150 hover:bg-white transition-all active:scale-95 shadow-none flex items-center justify-center p-0"
+            className="h-12 w-12 md:h-14 md:w-14 rounded-2xl text-black bg-white shadow-md border border-gray-150 hover:bg-white transition-all active:scale-95 shadow-none flex items-center justify-center p-0 shrink-0"
             title="Add Product"
           >
             <Plus size={24} className="md:w-[28px] md:h-[28px]" strokeWidth={3} />
